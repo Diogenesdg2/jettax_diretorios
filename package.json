@@ -15,6 +15,7 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
     "pinia": "^3.0.4",
     "unorm": "^1.6.0",
     "vue": "beta",
