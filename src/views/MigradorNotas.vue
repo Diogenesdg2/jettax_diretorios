@@ -49,6 +49,14 @@
         </div>
       </div>
 
+      <!-- DIR: exibir TOTAL de XMLs das empresas selecionadas -->
+      <div v-if="sourceMode === 'dir' && sourceNotasHandle" class="muted" style="margin-top: 6px">
+        XMLs das empresas selecionadas: <b>{{ dirSelectedXmlCount }}</b>
+        <span v-if="dirXmlTotal">
+          | Total (todas): <b>{{ dirXmlTotal }}</b></span
+        >
+      </div>
+
       <!-- ZIP: exibir TOTAL de XMLs das empresas selecionadas -->
       <div v-if="sourceMode === 'zip' && zipMeta.loaded" class="muted" style="margin-top: 6px">
         XMLs das empresas selecionadas: <b>{{ zipSelectedXmlCount }}</b>
@@ -145,9 +153,9 @@
           Baixar pulados (JSON)
         </button>
 
-        <span class="muted" v-if="skippedItems.length"
-          >Relatório: <b>{{ skippedItems.length }}</b> item(ns)</span
-        >
+        <span class="muted" v-if="skippedItems.length">
+          Relatório: <b>{{ skippedItems.length }}</b> item(ns)
+        </span>
         <span class="muted" v-if="skipTruncated"
           >(limitado a <b>{{ MAX_SKIPS }}</b
           >)</span
@@ -163,7 +171,6 @@
           {{ stats.errors }}
         </div>
 
-        <!-- VISUAL (pós-migração): empresas com diretórios vazios -->
         <div v-if="emptyDirCompaniesSorted.length" class="muted" style="margin-top: 6px">
           <b>Empresas com diretórios vazios (itens pulados):</b>
           {{ emptyDirCompaniesSorted.join(', ') }}
@@ -222,6 +229,17 @@ const sourceDirHandle = ref(null)
 const sourceNotasHandle = ref(null)
 const sourceDirName = ref('')
 const sourceNotasName = ref('')
+
+// DIR: contagem de XMLs por empresa + total
+const dirXmlCountByCompany = ref({}) // { [companyFolder]: number }
+const dirXmlTotal = ref(0)
+const dirSelectedXmlCount = computed(() => {
+  if (sourceMode.value !== 'dir' || !sourceNotasHandle.value) return 0
+  const map = dirXmlCountByCompany.value || {}
+  let sum = 0
+  for (const c of selectedCompanies.value) sum += map[c] || 0
+  return sum
+})
 
 // --- origem ZIP
 const zipName = ref('')
@@ -324,6 +342,9 @@ watch(sourceMode, () => {
   sourceDirName.value = ''
   sourceNotasName.value = ''
 
+  dirXmlCountByCompany.value = {}
+  dirXmlTotal.value = 0
+
   zipName.value = ''
   zipEntries.value = []
   zipMeta.value = { loaded: false, filesCount: 0, rootPrefix: 'NOTAS' }
@@ -401,7 +422,7 @@ const normStatus = (n) =>
 
 // -------- relatório skip (não contar PDFs em stats.skipped)
 function addSkip({ mode, reason, sourcePath, kind = 'other' }) {
-  if (kind !== 'pdf') stats.value.skipped++ // <- NÃO conta PDFs
+  if (kind !== 'pdf') stats.value.skipped++
   if (skippedItems.value.length < MAX_SKIPS) {
     skippedItems.value.push({
       when: new Date().toISOString(),
@@ -412,7 +433,6 @@ function addSkip({ mode, reason, sourcePath, kind = 'other' }) {
     })
   }
 
-  // relatório visual: empresa com diretório vazio
   const r = String(reason || '').toLowerCase()
   if (r.includes('vazia') || r.includes('vazio')) {
     markEmptyDirCompanyFromSourcePath(sourcePath)
@@ -529,11 +549,96 @@ async function listFiles(dirHandle) {
   return out
 }
 
+/* ===================== DIR: CONTAGEM XMLS ===================== */
+function isXmlName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .endsWith('.xml')
+}
+async function countXmlFilesInDir(dirHandle) {
+  const files = await listFiles(dirHandle)
+  return files.reduce((acc, f) => acc + (isXmlName(f.name) ? 1 : 0), 0)
+}
+async function countXmlsForCompanyDir(companyFolder) {
+  let total = 0
+
+  let companyDir
+  try {
+    companyDir = await getDir(sourceNotasHandle.value, companyFolder, false)
+  } catch {
+    return 0
+  }
+
+  const years = (await listDirNames(companyDir)).filter(isYear)
+  for (const year of years) {
+    const yearDir = await getDir(companyDir, year, false)
+    const months = (await listDirNames(yearDir)).filter(isMonth)
+
+    for (const month of months) {
+      const monthDir = await getDir(yearDir, month, false)
+      const monthChildren = await listDirNames(monthDir)
+
+      for (const erName of monthChildren) {
+        const ER = normER(erName)
+        if (!ER) continue
+
+        const erDir = await getDir(monthDir, erName, false)
+
+        const erChildren = await listDirNames(erDir)
+        const statuses = erChildren.map(normStatus).filter(Boolean)
+
+        if (statuses.length) {
+          for (const st of statuses) {
+            const stDir = await getDir(erDir, st, false)
+            if (await dirExists(stDir, 'xmls')) {
+              const xmlDir = await getDir(stDir, 'xmls', false)
+              total += await countXmlFilesInDir(xmlDir)
+            }
+          }
+        } else {
+          if (await dirExists(erDir, 'xmls')) {
+            const xmlDir = await getDir(erDir, 'xmls', false)
+            total += await countXmlFilesInDir(xmlDir)
+          }
+        }
+      }
+    }
+  }
+
+  return total
+}
+
+async function computeDirXmlCounts() {
+  if (!sourceNotasHandle.value) return
+
+  status.value = 'Contando XMLs (diretório)...'
+  addLog('Contando XMLs em diretório (pode demorar dependendo do volume)...')
+
+  const counts = {}
+  await parallelForEach(
+    companies.value,
+    async (companyFolder) => {
+      const n = await countXmlsForCompanyDir(companyFolder)
+      counts[companyFolder] = n
+    },
+    concurrency.value,
+  )
+
+  let total = 0
+  for (const k of Object.keys(counts)) total += counts[k] || 0
+
+  dirXmlCountByCompany.value = counts
+  dirXmlTotal.value = total
+
+  status.value = 'Contagem de XMLs concluída.'
+  addLog(`Contagem concluída (DIR): total XMLs=${dirXmlTotal.value}`)
+}
+/* =================== /DIR: CONTAGEM XMLS ====================== */
+
 // -------- destino: cache de diretórios e arquivos
 function pathKey(parts) {
   return parts.join('/')
 }
-
 async function getDestDirCached(parts) {
   const key = pathKey(parts)
   if (dryRun.value) return { dir: null, key }
@@ -547,7 +652,6 @@ async function getDestDirCached(parts) {
   destDirCache.set(key, cur)
   return { dir: cur, key }
 }
-
 async function destHasFile(dirHandle, dirKey, fileName) {
   let set = destFilesCache.get(dirKey)
   if (!set) {
@@ -564,7 +668,6 @@ async function destHasFile(dirHandle, dirKey, fileName) {
     return false
   }
 }
-
 function markDestFile(dirKey, fileName) {
   let set = destFilesCache.get(dirKey)
   if (!set) {
@@ -635,6 +738,9 @@ async function pickSourceDir() {
   )
   selectedCompanies.value = new Set()
   addLog(`Empresas encontradas: ${companies.value.length}`)
+
+  // <<< CONTAGEM DE XMLS NO DIRETÓRIO (todas as empresas) >>>
+  await computeDirXmlCounts()
 }
 
 // -------- ZIP helpers
@@ -1036,7 +1142,6 @@ function parseZipEntry(entryPath) {
   }
 
   const leaf = isXml ? 'XMLS' : 'PDFS'
-
   const companyUpper = companyUpperFromFolder(companyFolder)
   const DOC = safeName(docType.value, { upper: true })
 
@@ -1143,9 +1248,9 @@ async function run() {
     addLog(`Modo origem: ${sourceMode.value === 'dir' ? 'Diretório' : 'ZIP'}`)
     addLog(`Tipo documento: ${safeName(docType.value, { upper: true })}`)
     addLog(
-      `PDFs: ${includePdfs.value ? 'SIM' : 'NÃO'} | Pular se existe: ${skipIfExists.value ? 'SIM' : 'NÃO'} | Dry-run: ${
-        dryRun.value ? 'SIM' : 'NÃO'
-      }`,
+      `PDFs: ${includePdfs.value ? 'SIM' : 'NÃO'} | Pular se existe: ${
+        skipIfExists.value ? 'SIM' : 'NÃO'
+      } | Dry-run: ${dryRun.value ? 'SIM' : 'NÃO'}`,
     )
 
     if (sourceMode.value === 'dir') await runFromDir()
@@ -1169,7 +1274,6 @@ async function run() {
 </script>
 
 <style scoped>
-/* ========= Base / Theme ========= */
 .page {
   --bgA: #f6f7fb;
   --bgB: #eef2ff;
@@ -1199,7 +1303,6 @@ async function run() {
   color: var(--text);
 }
 
-/* Fundo moderno (global) */
 :global(body) {
   background:
     radial-gradient(1100px 520px at 12% -10%, rgba(47, 43, 124, 0.2) 0%, transparent 58%),
@@ -1207,7 +1310,6 @@ async function run() {
     linear-gradient(180deg, var(--bgA) 0%, var(--bgB) 60%, #f8fafc 100%);
 }
 
-/* ========= Header ========= */
 .header {
   padding: 10px 0 6px;
 }
@@ -1232,7 +1334,6 @@ async function run() {
   margin-top: 10px;
 }
 
-/* ========= Cards ========= */
 .card {
   margin-top: 14px;
   border: 1px solid var(--line);
@@ -1245,7 +1346,6 @@ async function run() {
     0 1px 0 rgba(255, 255, 255, 0.55) inset;
 }
 
-/* ========= Layout helpers ========= */
 .row {
   display: flex;
   gap: 12px;
@@ -1267,7 +1367,6 @@ async function run() {
   align-items: center;
 }
 
-/* ========= Radios ========= */
 .radio {
   display: inline-flex;
   gap: 8px;
@@ -1282,7 +1381,6 @@ async function run() {
   accent-color: var(--primary);
 }
 
-/* ========= Inputs ========= */
 .input {
   width: min(420px, 100%);
   padding: 10px 12px;
@@ -1309,7 +1407,6 @@ async function run() {
   accent-color: var(--primary);
 }
 
-/* ========= Buttons ========= */
 button {
   padding: 10px 14px;
   border-radius: 14px;
@@ -1350,7 +1447,6 @@ button:disabled {
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
 }
 
-/* ========= Companies ========= */
 .companies {
   margin-top: 14px;
   border-top: 1px dashed rgba(100, 116, 139, 0.3);
@@ -1374,8 +1470,6 @@ button:disabled {
   gap: 8px;
   padding-right: 6px;
 }
-
-/* scrollbars */
 .companies-list::-webkit-scrollbar,
 .log::-webkit-scrollbar {
   width: 10px;
@@ -1415,7 +1509,6 @@ button:disabled {
   color: #0b1220;
 }
 
-/* ========= Status / Log ========= */
 .status {
   display: flex;
   justify-content: space-between;
@@ -1443,7 +1536,6 @@ button:disabled {
   box-shadow: 0 16px 36px rgba(2, 6, 23, 0.32);
 }
 
-/* ========= Modal ========= */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1455,7 +1547,6 @@ button:disabled {
   z-index: 9999;
   padding: 16px;
 }
-
 .modal {
   width: min(600px, 100%);
   border-radius: 18px;
@@ -1465,12 +1556,10 @@ button:disabled {
   box-shadow: 0 22px 60px rgba(2, 6, 23, 0.45);
   padding: 16px;
 }
-
 .modal h3 {
   margin: 0 0 8px;
   letter-spacing: -0.01em;
 }
-
 .modal-actions {
   display: flex;
   gap: 10px;
@@ -1479,7 +1568,6 @@ button:disabled {
   margin-top: 12px;
 }
 
-/* Pequeno refinamento para <code> */
 code {
   background: rgba(15, 23, 42, 0.06);
   border: 1px solid rgba(15, 23, 42, 0.08);
