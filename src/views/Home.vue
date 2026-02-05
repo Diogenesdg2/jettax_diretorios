@@ -522,7 +522,8 @@ function sendWhats() {
   min-height: 420px;
   display: grid;
   align-items: center;
-  background: url('@/assets/hero-viman.jpg') center/cover no-repeat;
+
+  background: linear-gradient(135deg, var(--blue2) 0%, var(--blue) 45%, #0b1220 100%);
 }
 .hero__overlay {
   position: absolute;
