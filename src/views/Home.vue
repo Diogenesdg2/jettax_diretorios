@@ -94,8 +94,7 @@
           </div>
 
           <div class="welcome__right">
-            <img src="@/assets/selo-65.svg" alt="Selo 65 anos" class="sealImg" />
-            <div class="sealCaption">TRADIÇÃO E QUALIDADE</div>
+            <img src="@/assets/Selo-65.svg" alt="Selo 65 anos" class="sealImg" />
           </div>
         </div>
       </div>
