@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header">
-      <h2>Migrador de Notas (recriar estrutura)</h2>
+      <h2>Migrador de XMLs (recriar estrutura)</h2>
       <p class="muted">
         Requer Chrome/Edge (File System Access API). O processo é por <b>cópia</b> (não apaga a
         origem).
