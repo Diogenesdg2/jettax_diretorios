@@ -49,8 +49,9 @@
         </div>
       </div>
 
+      <!-- ZIP: exibir TOTAL de XMLs das empresas selecionadas -->
       <div v-if="sourceMode === 'zip' && zipMeta.loaded" class="muted" style="margin-top: 6px">
-        Arquivos no ZIP: <b>{{ zipMeta.filesCount }}</b> | Raiz: <b>{{ zipMeta.rootPrefix }}</b>
+        XMLs das empresas selecionadas: <b>{{ zipSelectedXmlCount }}</b>
       </div>
 
       <div v-if="companies.length" class="companies">
@@ -227,6 +228,17 @@ const zipName = ref('')
 const zipEntries = ref([]) // [{ path, zipObj }]
 const zipMeta = ref({ loaded: false, filesCount: 0, rootPrefix: 'NOTAS' })
 
+// ZIP: contagem de XMLs por empresa + total selecionado
+const zipXmlCountByCompany = ref({}) // { [companyFolder]: number }
+const zipXmlTotal = ref(0)
+const zipSelectedXmlCount = computed(() => {
+  if (sourceMode.value !== 'zip' || !zipMeta.value.loaded) return 0
+  const map = zipXmlCountByCompany.value || {}
+  let sum = 0
+  for (const c of selectedCompanies.value) sum += map[c] || 0
+  return sum
+})
+
 // --- destino
 const destHandle = ref(null)
 const destName = ref('')
@@ -315,6 +327,8 @@ watch(sourceMode, () => {
   zipName.value = ''
   zipEntries.value = []
   zipMeta.value = { loaded: false, filesCount: 0, rootPrefix: 'NOTAS' }
+  zipXmlCountByCompany.value = {}
+  zipXmlTotal.value = 0
 
   status.value = 'Aguardando'
   log.value = []
@@ -675,6 +689,26 @@ async function pickZip() {
   zipMeta.value = { loaded: true, filesCount: entries.length, rootPrefix: 'NOTAS' }
   zipEntries.value = entries
 
+  // calcular XMLs por empresa (somente dentro de xmls/ e .xml)
+  const counts = {}
+  let total = 0
+  for (const e of entries) {
+    const p = normalizeZipPath(e.path)
+    if (!p.toUpperCase().startsWith('NOTAS/')) continue
+
+    const p2 = stripNotasPrefix(p)
+    const parts = p2.split('/').filter(Boolean)
+    const companyFolder = parts[0]
+    if (!companyFolder) continue
+
+    if (includesSeg(p, 'xmls') && isXmlFile(p)) {
+      counts[companyFolder] = (counts[companyFolder] || 0) + 1
+      total++
+    }
+  }
+  zipXmlCountByCompany.value = counts
+  zipXmlTotal.value = total
+
   const set = new Set()
   for (const e of entries) {
     const p2 = stripNotasPrefix(e.path)
@@ -687,8 +721,8 @@ async function pickZip() {
   companyFilter.value = ''
 
   status.value = 'ZIP carregado. Selecione empresas e o destino.'
-  addLog(`Arquivos no ZIP: ${entries.length}`)
   addLog(`Empresas encontradas em NOTAS/: ${companies.value.length}`)
+  addLog(`Total de XMLs no ZIP (todas empresas): ${zipXmlTotal.value}`)
 }
 
 // -------- RUN (DIR)
