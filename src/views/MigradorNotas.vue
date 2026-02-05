@@ -161,6 +161,12 @@
           Copiados: {{ stats.copied }} | Pulados (sem PDFs): {{ stats.skipped }} | Erros:
           {{ stats.errors }}
         </div>
+
+        <!-- VISUAL (pós-migração): empresas com diretórios vazios -->
+        <div v-if="emptyDirCompaniesSorted.length" class="muted" style="margin-top: 6px">
+          <b>Empresas com diretórios vazios (itens pulados):</b>
+          {{ emptyDirCompaniesSorted.join(', ') }}
+        </div>
       </div>
 
       <pre class="log">{{ log.join('\n') }}</pre>
@@ -169,8 +175,15 @@
     <!-- Modal de conclusão -->
     <div v-if="showDoneModal" class="modal-backdrop" @click.self="closeDoneModal">
       <div class="modal">
-        <h3>Concluído com sucesso</h3>
+        <h3>Concluído</h3>
         <p class="muted">{{ doneMessage }}</p>
+
+        <div v-if="emptyDirCompaniesSorted.length" style="margin-top: 10px">
+          <b>Empresas com diretórios vazios (itens pulados):</b>
+          <ul style="margin: 8px 0 0; padding-left: 18px">
+            <li v-for="c in emptyDirCompaniesSorted" :key="c">{{ c }}</li>
+          </ul>
+        </div>
 
         <div class="modal-actions">
           <button
@@ -230,7 +243,7 @@ const dryRun = ref(false)
 // --- performance / re-cópia
 const skipIfExists = ref(true)
 
-// FIXO EM 10 (não editável no template)
+// Concorrência fixa (oculta)
 const concurrency = ref(10)
 
 // --- modal conclusão
@@ -239,6 +252,12 @@ const doneMessage = ref('')
 function closeDoneModal() {
   showDoneModal.value = false
 }
+
+// --- relatório visual: empresas com diretórios vazios (itens pulados)
+const emptyDirCompanies = ref([]) // array única
+const emptyDirCompaniesSorted = computed(() =>
+  [...emptyDirCompanies.value].sort((a, b) => a.localeCompare(b, 'pt-BR')),
+)
 
 // caches destino
 const destDirCache = new Map() // "A/B/C" -> FileSystemDirectoryHandle
@@ -301,6 +320,7 @@ watch(sourceMode, () => {
   log.value = []
   stats.value = { copied: 0, skipped: 0, errors: 0 }
   skippedItems.value = []
+  emptyDirCompanies.value = []
 
   destDirCache.clear()
   destFilesCache.clear()
@@ -318,6 +338,53 @@ function resetLog() {
   log.value = []
 }
 
+// -------- normalização nomes/estrutura
+function isHex24(s) {
+  return /^[0-9a-f]{24}$/i.test(s)
+}
+function safeName(s, { upper = false } = {}) {
+  let x = (s ?? '')
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+  x = x.replace(/[\\/:*?"<>|]/g, ' ')
+  x = x.replace(/\s+/g, ' ').trim()
+  return upper ? x.toUpperCase() : x
+}
+function companyUpperFromFolder(folderName) {
+  const parts = folderName.split('_').filter(Boolean)
+  const last = parts.at(-1)
+  const base = isHex24(last) ? parts.slice(0, -1) : parts
+  return safeName(base.join(' '), { upper: true })
+}
+
+function extractCompanyUpperFromNotasPath(p) {
+  const norm = String(p || '').replaceAll('\\', '/')
+  const idx = norm.toUpperCase().indexOf('NOTAS/')
+  if (idx === -1) return null
+  const rest = norm.slice(idx + 'NOTAS/'.length)
+  const folder = rest.split('/').filter(Boolean)[0]
+  return folder ? companyUpperFromFolder(folder) : null
+}
+
+function markEmptyDirCompanyFromSourcePath(sourcePath) {
+  const c = extractCompanyUpperFromNotasPath(sourcePath)
+  if (!c) return
+  if (!emptyDirCompanies.value.includes(c)) emptyDirCompanies.value.push(c)
+}
+
+const isYear = (n) => /^\d{4}$/.test(n)
+const isMonth = (n) => /^(0?[1-9]|1[0-2])$/.test(n)
+const pad2 = (m) => (String(m).length === 1 ? `0${m}` : String(m))
+const normER = (n) =>
+  n?.toLowerCase() === 'emitida' ? 'Emitida' : n?.toLowerCase() === 'recebida' ? 'Recebida' : null
+const normStatus = (n) =>
+  n?.toLowerCase() === 'autorizada'
+    ? 'Autorizada'
+    : n?.toLowerCase() === 'cancelada'
+      ? 'Cancelada'
+      : null
+
 // -------- relatório skip (não contar PDFs em stats.skipped)
 function addSkip({ mode, reason, sourcePath, kind = 'other' }) {
   if (kind !== 'pdf') stats.value.skipped++ // <- NÃO conta PDFs
@@ -329,6 +396,12 @@ function addSkip({ mode, reason, sourcePath, kind = 'other' }) {
       sourcePath,
       kind,
     })
+  }
+
+  // relatório visual: empresa com diretório vazio
+  const r = String(reason || '').toLowerCase()
+  if (r.includes('vazia') || r.includes('vazio')) {
+    markEmptyDirCompanyFromSourcePath(sourcePath)
   }
 }
 
@@ -384,38 +457,6 @@ function selectAllFiltered() {
 function clearSelection() {
   selectedCompanies.value = new Set()
 }
-
-// -------- normalização nomes/estrutura
-function isHex24(s) {
-  return /^[0-9a-f]{24}$/i.test(s)
-}
-function safeName(s, { upper = false } = {}) {
-  let x = (s ?? '')
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-  x = x.replace(/[\\/:*?"<>|]/g, ' ')
-  x = x.replace(/\s+/g, ' ').trim()
-  return upper ? x.toUpperCase() : x
-}
-function companyUpperFromFolder(folderName) {
-  const parts = folderName.split('_').filter(Boolean)
-  const last = parts.at(-1)
-  const base = isHex24(last) ? parts.slice(0, -1) : parts
-  return safeName(base.join(' '), { upper: true })
-}
-
-const isYear = (n) => /^\d{4}$/.test(n)
-const isMonth = (n) => /^(0?[1-9]|1[0-2])$/.test(n)
-const pad2 = (m) => (String(m).length === 1 ? `0${m}` : String(m))
-const normER = (n) =>
-  n?.toLowerCase() === 'emitida' ? 'Emitida' : n?.toLowerCase() === 'recebida' ? 'Recebida' : null
-const normStatus = (n) =>
-  n?.toLowerCase() === 'autorizada'
-    ? 'Autorizada'
-    : n?.toLowerCase() === 'cancelada'
-      ? 'Cancelada'
-      : null
 
 // -------- concorrência e locks
 async function parallelForEach(items, worker, conc = 4) {
@@ -1002,7 +1043,7 @@ async function runFromZip() {
     })
   }
 
-  status.value = `Processando ${tasks.length} arquivo(s) (zip) com concorrência ${concurrency.value}...`
+  status.value = `Processando ${tasks.length} arquivo(s) (zip)...`
 
   await parallelForEach(
     tasks,
@@ -1055,6 +1096,7 @@ async function run() {
   stats.value = { copied: 0, skipped: 0, errors: 0 }
   log.value = []
   skippedItems.value = []
+  emptyDirCompanies.value = []
 
   destDirCache.clear()
   destFilesCache.clear()
@@ -1067,7 +1109,7 @@ async function run() {
     addLog(`Modo origem: ${sourceMode.value === 'dir' ? 'Diretório' : 'ZIP'}`)
     addLog(`Tipo documento: ${safeName(docType.value, { upper: true })}`)
     addLog(
-      `PDFs: ${includePdfs.value ? 'SIM' : 'NÃO'} | Pular se existe: ${skipIfExists.value ? 'SIM' : 'NÃO'} | Conc: ${concurrency.value} | Dry-run: ${
+      `PDFs: ${includePdfs.value ? 'SIM' : 'NÃO'} | Pular se existe: ${skipIfExists.value ? 'SIM' : 'NÃO'} | Dry-run: ${
         dryRun.value ? 'SIM' : 'NÃO'
       }`,
     )
