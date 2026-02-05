@@ -2,7 +2,7 @@
 <template>
   <div class="page">
     <header class="header">
-      <h2>Migrador de Notas</h2>
+      <h2>Migrador de XMLs</h2>
       <p class="muted">
         Origem pode ser <b>Diretório</b> (já descompactado) ou <b>ZIP</b>. As empresas devem estar
         em <b>NOTAS/{empresa}/...</b>. (Cópia; não apaga nada.)
