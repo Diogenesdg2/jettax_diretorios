@@ -1,96 +1,74 @@
-<!-- src/views/Home.vue -->
 <template>
   <main class="home">
-    <!-- HEADER -->
+    <!-- âncora do Home -->
+    <div id="top"></div>
+
+    <!-- HEADER (centralizado) -->
     <header class="header">
       <div class="container header__inner">
-        <div class="brand">
-          <div class="brand__mark">V</div>
-          <div class="brand__text">
-            <div class="brand__name">Viman</div>
-            <div class="brand__tag">Contabilidade</div>
-          </div>
-        </div>
+        <nav class="nav" aria-label="Navegação principal">
+          <div class="nav__menu">
+            <a class="nav__link nav__link--active" href="#top">Home</a>
+            <a class="nav__link" href="#sobre">Empresa</a>
+            <a class="nav__link" href="#servicos">Serviços</a>
 
-        <nav class="nav">
-          <a href="#servicos">Serviços</a>
-          <a href="#segmentos">Segmentos</a>
-          <a href="#sobre">Sobre</a>
-          <a href="#avaliacoes">Avaliações</a>
-          <a href="#contato">Contato</a>
+            <!-- Currículos: como a seção foi removida, direciona para WhatsApp -->
+            <a
+              class="nav__link"
+              :href="whatsLink('Olá! Quero enviar meu currículo para a Viman.')"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Currículos
+            </a>
+
+            <a class="nav__link" href="#contato">Contato</a>
+          </div>
+
+          <a
+            class="nav__cta"
+            href="https://vip.acessorias.com/vimancontabilidade"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ÁREA DO CLIENTE
+          </a>
         </nav>
       </div>
     </header>
 
     <!-- HERO -->
-    <section class="hero" aria-label="Viman Contabilidade">
-      <div class="hero__overlay"></div>
+    <section class="hero hero--brand" aria-label="Viman Contabilidade" :style="heroStyle">
+      <div class="hero__tint"></div>
 
-      <div class="container hero__inner">
-        <div class="hero__copy">
-          <div class="hero__logo">
-            <div class="hero__logo__mark">VIMAN</div>
-            <div class="hero__logo__sub">CONTABILIDADE</div>
-          </div>
+      <div class="hero__content">
+        <div class="hero__brandStack">
+          <div class="hero__emblem" :style="emblemStyle" aria-hidden="true"></div>
 
-          <h1>Contabilidade completa para sua empresa crescer com segurança</h1>
-          <p>
-            Rotina fiscal, contábil e departamento pessoal com atendimento consultivo. Tradição,
-            qualidade e agilidade no dia a dia.
-          </p>
-
-          <div class="hero__actions">
-            <a class="btn" href="#contato">Falar com um especialista</a>
-            <a class="btn btn--ghost" href="#servicos">Conhecer serviços</a>
-          </div>
-
-          <div class="hero__trust">
-            <div class="trust">
-              <b>65 anos</b>
-              <span>tradição e qualidade</span>
-            </div>
-            <div class="trust">
-              <b>Atendimento</b>
-              <span>Leme/SP e região</span>
-            </div>
-            <div class="trust">
-              <b>Suporte</b>
-              <span>rápido e próximo</span>
-            </div>
+          <div class="hero__word">
+            <div class="hero__name">VIMAN</div>
+            <div class="hero__sub">CONTABILIDADE</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- BOAS-VINDAS + SELO -->
+    <!-- BOAS-VINDAS -->
     <section class="welcome" id="sobre">
       <div class="container">
-        <div class="welcome__card">
+        <div class="welcome__card welcome__card--clean">
           <div class="welcome__left">
-            <div class="kicker">BOAS-VINDAS</div>
-            <h2>Seu parceiro de crescimento</h2>
-            <p>
+            <div class="kicker">BOAS‑VINDAS</div>
+
+            <h2 class="welcome__title">
+              Seu parceiro<br />
+              de crescimento
+            </h2>
+
+            <p class="welcome__text">
               Nosso compromisso é ser o seu parceiro de crescimento, fornecendo soluções confiáveis
               e inovadoras para impulsionar o seu sucesso.
             </p>
-
-            <ul class="bullets">
-              <li>Obrigações em dia e conformidade fiscal</li>
-              <li>Planejamento tributário para economizar com segurança</li>
-              <li>Folha/DP com prazos e rotinas bem definidas</li>
-            </ul>
-
-            <div class="welcome__actions">
-              <a
-                class="btn btn--small"
-                :href="whatsLink('Olá! Quero um diagnóstico contábil.')"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Quero um diagnóstico
-              </a>
-              <a class="btn btn--small btn--ghost" href="#avaliacoes">Ver avaliações</a>
-            </div>
           </div>
 
           <div class="welcome__right">
@@ -126,59 +104,6 @@
       </div>
     </section>
 
-    <!-- SEGMENTOS -->
-    <section class="section section--alt" id="segmentos">
-      <div class="container">
-        <div class="section__head">
-          <h2>Segmentos atendidos</h2>
-          <p>Atendimento adaptado à realidade do seu negócio.</p>
-        </div>
-
-        <div class="grid grid--4">
-          <div v-for="seg in segments" :key="seg" class="pill-card">{{ seg }}</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- AVALIAÇÕES -->
-    <section class="section" id="avaliacoes">
-      <div class="container">
-        <div class="section__head">
-          <h2>Avaliações</h2>
-          <p>Reputação construída com atendimento e consistência.</p>
-        </div>
-
-        <div class="rating">
-          <div class="rating__score">
-            <b>5,0</b>
-            <span>★★★★★</span>
-          </div>
-          <div class="rating__meta">
-            <div><b>Google</b></div>
-            <div class="muted">Baseado em avaliações públicas (ex.: 4 avaliações).</div>
-          </div>
-          <a
-            class="btn btn--small"
-            :href="whatsLink('Olá! Vim pelas avaliações e quero atendimento.')"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Falar agora
-          </a>
-        </div>
-
-        <div class="grid grid--3" style="margin-top: 12px">
-          <article v-for="t in testimonials" :key="t.name" class="quote">
-            <p>“{{ t.text }}”</p>
-            <div class="quote__by">
-              <b>{{ t.name }}</b>
-              <span class="muted">{{ t.role }}</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- FAIXA CONTATO -->
     <section class="contactbar">
       <div class="container contactbar__inner">
@@ -207,54 +132,15 @@
           >
             WhatsApp
           </a>
-          <a class="btn btn--small btn--ghost" href="#contato">Mensagem</a>
+          <a class="btn btn--small btn--ghost" href="#contato">Ver mapa</a>
         </div>
       </div>
     </section>
 
-    <!-- CONTATO + MAPA -->
+    <!-- MAPA (full width) -->
     <section class="section section--alt" id="contato">
-      <div class="container two">
-        <div class="panel">
-          <h2>Contato</h2>
-          <p class="muted">Preencha e retornamos rapidamente.</p>
-
-          <div class="info">
-            <div>
-              <b>Telefone:</b> <a :href="`tel:${contacts.phoneRaw}`">{{ contacts.phone }}</a>
-            </div>
-            <div>
-              <b>E-mail:</b> <a :href="`mailto:${contacts.email}`">{{ contacts.email }}</a>
-            </div>
-            <div><b>Endereço:</b> {{ contacts.address }}</div>
-          </div>
-
-          <form class="form" @submit.prevent="sendWhats">
-            <label class="field">
-              <span>Nome</span>
-              <input v-model.trim="lead.name" required />
-            </label>
-
-            <label class="field">
-              <span>Telefone</span>
-              <input v-model.trim="lead.phone" required />
-            </label>
-
-            <label class="field">
-              <span>Empresa (opcional)</span>
-              <input v-model.trim="lead.company" />
-            </label>
-
-            <label class="field">
-              <span>Mensagem</span>
-              <textarea v-model.trim="lead.message" rows="4" required />
-            </label>
-
-            <button class="btn" type="submit">Enviar no WhatsApp</button>
-          </form>
-        </div>
-
-        <div class="map">
+      <div class="container">
+        <div class="map map--full">
           <iframe
             title="Mapa - Viman Contabilidade"
             loading="lazy"
@@ -278,9 +164,8 @@
 
         <div class="footer__links">
           <a href="#servicos">Serviços</a>
-          <a href="#segmentos">Segmentos</a>
           <a href="#sobre">Sobre</a>
-          <a href="#contato">Contato</a>
+          <a href="#contato">Localização</a>
           <a href="#">Aviso de Privacidade</a>
         </div>
       </div>
@@ -302,11 +187,21 @@
 <script setup>
 import { computed, reactive } from 'vue'
 
+import bannerUrl from '@/assets/banner-principal.webp'
+import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
+
+const heroStyle = computed(() => ({
+  backgroundImage: `url(${bannerUrl})`,
+}))
+
+const emblemStyle = computed(() => ({
+  backgroundImage: `url(${logoWhiteUrl})`,
+}))
+
 const contacts = reactive({
   phone: '(19) 3571-3707',
   phoneRaw: '1935713707',
   email: 'contato@viman.com.br',
-  address: 'R. Maj. Arthur Franco Mourão, 453 - Centro, Leme - SP, 13611-490',
   whatsappE164: '551935713707',
 })
 
@@ -343,158 +238,122 @@ const services = [
   },
   { icon: '✅', title: 'Regularizações', desc: 'Pendências, certidões, parcelamentos e ajustes.' },
 ]
-
-const segments = [
-  'Comércio',
-  'Prestadores de Serviços',
-  'Indústria',
-  'MEI/ME',
-  'Profissionais liberais',
-  'Terceiro setor (se aplicável)',
-  'Holding/Patrimonial',
-  'Produtor rural (se aplicável)',
-]
-
-const testimonials = [
-  {
-    text: 'Atendimento muito claro e rápido, sempre orientando o melhor caminho.',
-    name: 'Cliente',
-    role: 'Avaliação pública',
-  },
-  {
-    text: 'Organização e cumprimento de prazos. Passa muita segurança.',
-    name: 'Cliente',
-    role: 'Avaliação pública',
-  },
-  { text: 'Equipe atenciosa e técnica. Recomendo.', name: 'Cliente', role: 'Avaliação pública' },
-]
-
-const lead = reactive({ name: '', phone: '', company: '', message: '' })
-
-function sendWhats() {
-  const lines = [
-    `Olá! Meu nome é ${lead.name}.`,
-    `Telefone: ${lead.phone}.`,
-    lead.company ? `Empresa: ${lead.company}.` : null,
-    `Mensagem: ${lead.message}`,
-  ].filter(Boolean)
-
-  window.open(whatsLink(lines.join('\n')), '_blank', 'noreferrer')
-}
 </script>
 
 <style scoped>
-:root {
+:global(:root) {
   --bg: #f6f7fb;
-  --text: #0f172a;
+  --text: var(--blue2);
   --muted: #64748b;
   --line: #e5e7eb;
   --card: #ffffff;
   --blue: #2f2b7c;
   --blue2: #1f1b57;
   --gold: #f3d36b;
+}
 
-  /* NOVO: azul bem claro para o fundo do card Boas-vindas */
-  --welcomeCardBg: #eef6ff;
+:global(html) {
+  scroll-behavior: smooth;
 }
 
 .home {
   background: var(--bg);
   color: var(--text);
 }
+
 .container {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.topbar {
-  background: var(--blue2);
-  color: #e2e8f0;
-  font-size: 13px;
-}
-.topbar__inner {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-  flex-wrap: wrap;
-}
-.topbar a {
-  color: #e2e8f0;
-  text-decoration: none;
-}
-.sep {
-  opacity: 0.7;
-  margin: 0 8px;
-}
-
+/* HEADER (centralizado, branco) */
 .header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(246, 247, 251, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-.header__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 12px 0;
-  flex-wrap: wrap;
+  background: #fff;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.brand__mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--blue), var(--blue2));
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-}
-.brand__name {
-  font-weight: 900;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-.brand__tag {
-  color: var(--muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.header__inner {
+  padding: 14px 0;
 }
 
 .nav {
+  width: 100%;
   display: flex;
-  gap: 14px;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav__menu {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 56px;
   flex-wrap: wrap;
 }
-.nav a {
+
+.nav__link {
+  position: relative;
   text-decoration: none;
-  color: var(--text);
-  font-weight: 700;
-  font-size: 14px;
-  opacity: 0.92;
-}
-.nav a:hover {
-  opacity: 1;
+  color: var(--blue2);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  padding: 10px 2px 16px;
 }
 
-.header__cta {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 3px;
+  background: var(--blue2);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.16s ease;
 }
 
+.nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+.nav__link--active::after {
+  transform: scaleX(1);
+}
+
+.nav__cta {
+  padding: 12px 18px;
+  border-radius: 0;
+  background: var(--blue2);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  border: 1px solid var(--blue2);
+  white-space: nowrap;
+}
+
+.nav__cta:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 900px) {
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav__menu {
+    gap: 22px;
+  }
+}
+
+/* BUTTONS */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -507,190 +366,210 @@ function sendWhats() {
   text-decoration: none;
   font-weight: 800;
 }
+
 .btn--ghost {
   background: transparent;
   color: var(--blue2);
 }
+
 .btn--small {
   padding: 8px 12px;
 }
 
-/* Se você NÃO tiver a imagem do hero, troque o background abaixo por uma cor/gradiente */
+/* HERO */
 .hero {
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.hero--brand {
   position: relative;
-  min-height: 420px;
+  min-height: clamp(620px, 100vh, 980px);
   display: grid;
   align-items: center;
+  padding-bottom: 180px; /* espaço para o card sobrepor */
+  z-index: 1;
+}
 
-  background: linear-gradient(135deg, var(--blue2) 0%, var(--blue) 45%, #0b1220 100%);
+.hero__tint {
+  display: none;
 }
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(10, 12, 25, 0.72) 0%,
-    rgba(10, 12, 25, 0.4) 55%,
-    rgba(10, 12, 25, 0.15) 100%
-  );
-}
-.hero__inner {
+
+.hero__content {
   position: relative;
-  padding: 52px 0;
-}
-.hero__copy {
-  max-width: 680px;
-  color: #fff;
-}
-.hero__logo {
-  margin-bottom: 12px;
-}
-.hero__logo__mark {
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  font-size: 44px;
-  line-height: 1;
-}
-.hero__logo__sub {
-  opacity: 0.9;
-  letter-spacing: 0.18em;
-  font-weight: 800;
-}
-
-.hero h1 {
-  margin: 0 0 10px;
-  font-size: 38px;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-}
-.hero p {
-  margin: 0 0 16px;
-  color: rgba(226, 232, 240, 0.92);
-  max-width: 62ch;
-}
-
-.hero__actions {
+  width: 100%;
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-.hero__actions .btn {
-  border-color: rgba(255, 255, 255, 0.35);
-}
-.hero__actions .btn--ghost {
-  color: #fff;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(24px, 7vw, 180px);
+  padding-right: 16px;
 }
 
-.hero__trust {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
-.trust {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 10px 12px;
+.hero__brandStack {
   display: grid;
-  gap: 2px;
-  min-width: 170px;
-}
-.trust span {
-  color: rgba(226, 232, 240, 0.9);
-  font-size: 12px;
-}
-
-.welcome {
-  margin-top: -44px;
-}
-.welcome__card {
-  /* ALTERADO: fundo azul bem claro */
-  background: var(--welcomeCardBg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
-  display: grid;
-  grid-template-columns: 1.35fr 0.65fr;
   gap: 14px;
-  padding: 18px;
+  align-items: start;
+  text-align: left;
 }
-@media (max-width: 900px) {
-  .welcome__card {
-    grid-template-columns: 1fr;
+
+.hero__emblem {
+  width: clamp(160px, 18vw, 260px);
+  height: clamp(80px, 10vw, 140px);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 240% 100%;
+}
+
+.hero__word {
+  display: inline-grid;
+  justify-items: start;
+  text-align: left;
+}
+
+.hero__name {
+  color: #fff;
+  font-family:
+    'Montserrat',
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
+    sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  font-size: clamp(56px, 7vw, 104px);
+  text-transform: uppercase;
+}
+
+.hero__sub {
+  color: #fff;
+  font-family:
+    'Montserrat',
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
+    sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  font-size: clamp(18px, 2.2vw, 34px);
+  text-transform: uppercase;
+  transform: translateX(0px);
+}
+
+@media (max-width: 700px) {
+  .hero__content {
+    justify-content: center;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-  .welcome {
-    margin-top: -22px;
+  .hero__brandStack {
+    text-align: center;
+    justify-items: center;
   }
+  .hero__word {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+/* WELCOME */
+.welcome {
+  position: relative;
+  z-index: 5;
+  margin-top: -160px;
 }
 
 .kicker {
-  font-size: 12px;
+  font-size: 18px;
   letter-spacing: 0.18em;
   color: var(--muted);
   font-weight: 900;
-}
-.welcome h2 {
-  margin: 4px 0 8px;
-  font-size: 30px;
-  color: var(--blue2);
-}
-.welcome p {
-  margin: 0 0 10px;
-  color: var(--muted);
+  text-transform: uppercase;
 }
 
-.bullets {
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
+.welcome__card--clean {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+
   display: grid;
-  gap: 8px;
-  color: #334155;
-}
-.bullets li {
-  padding-left: 22px;
-  position: relative;
-}
-.bullets li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--blue2);
-  font-weight: 900;
+  grid-template-columns: 1fr 420px;
+  align-items: center;
+
+  padding: 28px 34px;
+  gap: 18px;
 }
 
-.welcome__actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 14px;
+.welcome__title {
+  margin: 8px 0 10px;
+  font-size: 56px;
+  line-height: 1.02;
+  font-weight: 900;
+  color: var(--blue);
+}
+
+.welcome__text {
+  margin: 0;
+  color: #64748b;
+  max-width: 520px;
+  font-size: 16px;
+  line-height: 1.45;
 }
 
 .welcome__right {
   display: grid;
   place-items: center;
-  gap: 8px;
 }
 
 .sealImg {
-  width: 200px;
+  width: 240px;
   max-width: 100%;
   height: auto;
   display: block;
 }
-.sealCaption {
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: var(--blue2);
-  font-size: 12px;
-  text-align: center;
+
+@media (max-width: 900px) {
+  .hero--brand {
+    padding-bottom: 120px;
+  }
+  .welcome {
+    margin-top: -90px;
+  }
+
+  .welcome__card--clean {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .welcome__right {
+    margin-top: 10px;
+  }
+
+  .welcome__title {
+    font-size: 36px;
+  }
+
+  .kicker {
+    font-size: 14px;
+  }
+
+  .welcome__text {
+    font-size: 14px;
+  }
 }
 
+/* SECTIONS */
 .section {
   padding: 42px 0;
 }
+
 .section--alt {
   background: #fff;
   border-top: 1px solid var(--line);
@@ -700,10 +579,12 @@ function sendWhats() {
 .section__head {
   margin-bottom: 14px;
 }
+
 .section__head h2 {
   margin: 0 0 6px;
   font-size: 26px;
 }
+
 .section__head p {
   margin: 0;
   color: var(--muted);
@@ -713,15 +594,13 @@ function sendWhats() {
   display: grid;
   gap: 12px;
 }
+
 .grid--3 {
   grid-template-columns: repeat(3, 1fr);
 }
-.grid--4 {
-  grid-template-columns: repeat(4, 1fr);
-}
+
 @media (max-width: 900px) {
-  .grid--3,
-  .grid--4 {
+  .grid--3 {
     grid-template-columns: 1fr;
   }
 }
@@ -732,6 +611,7 @@ function sendWhats() {
   border-radius: 14px;
   padding: 14px;
 }
+
 .card__icon {
   width: 40px;
   height: 40px;
@@ -742,107 +622,34 @@ function sendWhats() {
   border: 1px solid rgba(47, 43, 124, 0.16);
   margin-bottom: 10px;
 }
+
 .card h3 {
   margin: 0 0 6px;
+  color: var(--blue2);
 }
+
 .card p {
   margin: 0 0 10px;
   color: var(--muted);
 }
+
 .link {
   text-decoration: none;
   font-weight: 900;
   color: var(--blue2);
 }
 
-.pill-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 10px 12px;
-  text-align: center;
-  font-weight: 800;
-  color: #334155;
-}
-
-.step {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
-}
-.step__n {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: rgba(47, 43, 124, 0.1);
-  border: 1px solid rgba(47, 43, 124, 0.18);
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  color: var(--blue2);
-  margin-bottom: 10px;
-}
-.step h3 {
-  margin: 0 0 6px;
-}
-.step p {
-  margin: 0;
-  color: var(--muted);
-}
-
-.rating {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.rating__score {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-.rating__score b {
-  font-size: 34px;
-  color: var(--blue2);
-}
-.rating__score span {
-  color: #f59e0b;
-  font-size: 18px;
-  letter-spacing: 0.06em;
-}
-.rating__meta .muted {
-  margin-top: 2px;
-}
-
-.quote {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
-}
-.quote p {
-  margin: 0 0 10px;
-  color: #0f172a;
-}
-.quote__by {
-  display: grid;
-  gap: 2px;
-}
 .muted {
   color: var(--muted);
 }
 
+/* CONTACT BAR */
 .contactbar {
   background: var(--gold);
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
+
 .contactbar__inner {
   display: flex;
   justify-content: space-between;
@@ -851,89 +658,31 @@ function sendWhats() {
   padding: 16px 0;
   flex-wrap: wrap;
 }
+
 .contactbar__item {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .ci {
   font-size: 18px;
 }
+
 .label {
   font-size: 12px;
   font-weight: 900;
   color: rgba(15, 23, 42, 0.75);
   letter-spacing: 0.04em;
 }
+
 .value {
   font-weight: 900;
   color: #0f172a;
   text-decoration: none;
 }
-.contactbar__cta {
-  gap: 10px;
-}
 
-.two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  align-items: start;
-}
-@media (max-width: 900px) {
-  .two {
-    grid-template-columns: 1fr;
-  }
-}
-
-.panel {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
-}
-.panel h2 {
-  margin: 0 0 6px;
-}
-.info {
-  display: grid;
-  gap: 8px;
-  margin: 10px 0 14px;
-  color: #334155;
-}
-.info a {
-  color: var(--blue2);
-  text-decoration: none;
-  font-weight: 900;
-}
-
-.form {
-  display: grid;
-  gap: 10px;
-}
-.field {
-  display: grid;
-  gap: 6px;
-}
-.field span {
-  font-weight: 900;
-  font-size: 13px;
-  color: #334155;
-}
-input,
-textarea {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  padding: 10px 12px;
-  outline: none;
-  font: inherit;
-}
-input:focus,
-textarea:focus {
-  border-color: var(--blue2);
-  box-shadow: 0 0 0 3px rgba(47, 43, 124, 0.12);
-}
-
+/* MAP */
 .map {
   background: #fff;
   border: 1px solid var(--line);
@@ -941,6 +690,7 @@ textarea:focus {
   overflow: hidden;
   min-height: 420px;
 }
+
 .map iframe {
   width: 100%;
   height: 100%;
@@ -948,31 +698,46 @@ textarea:focus {
   min-height: 420px;
 }
 
+.map--full {
+  width: 100%;
+  min-height: 520px;
+}
+
+.map--full iframe {
+  min-height: 520px;
+}
+
+/* FOOTER */
 .footer {
   background: var(--blue);
   color: #e2e8f0;
   padding: 18px 0;
 }
+
 .footer__inner {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
 }
+
 .footer__links {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
+
 .footer a {
   color: #e2e8f0;
   text-decoration: none;
   font-weight: 700;
 }
+
 .footer .muted {
   color: rgba(226, 232, 240, 0.85);
 }
 
+/* WhatsApp float */
 .wafloat {
   position: fixed;
   right: 16px;
