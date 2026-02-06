@@ -187,7 +187,7 @@
 <script setup>
 import { computed, reactive } from 'vue'
 
-import bannerUrl from '@/assets/banner-principal.webp'
+import bannerUrl from '@/assets/banner-principal.png'
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
 
 const heroStyle = computed(() => ({
