@@ -1,21 +1,20 @@
 <template>
   <main class="home">
-    <!-- âncora do Home -->
     <div id="top"></div>
 
-    <!-- HEADER (centralizado) -->
+    <!-- HEADER (igual Home.vue) -->
     <header class="header">
       <div class="container header__inner">
         <nav class="nav" aria-label="Navegação principal">
           <div class="nav__menu">
-            <a class="nav__link nav__link--active" href="#top">Home</a>
+            <a class="nav__link" href="/#top">Home</a>
 
             <router-link class="nav__link" to="/empresa" active-class="nav__link--active">
               Empresa
             </router-link>
-            <a class="nav__link" href="#servicos">Serviços</a>
 
-            <!-- Currículos: como a seção foi removida, direciona para WhatsApp -->
+            <a class="nav__link" href="/#servicos">Serviços</a>
+
             <router-link class="nav__link" to="/curriculos" active-class="nav__link--active">
               Currículos
             </router-link>
@@ -35,8 +34,8 @@
       </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero hero--brand" aria-label="Viman Contabilidade" :style="heroStyle">
+    <!-- HERO (mesmo padrão Home.vue, mas com banner da Empresa) -->
+    <section class="hero hero--brand" aria-label="Empresa - Viman Contabilidade" :style="heroStyle">
       <div class="hero__tint"></div>
 
       <div class="hero__content">
@@ -51,58 +50,69 @@
       </div>
     </section>
 
-    <!-- BOAS-VINDAS -->
-    <section class="welcome" id="sobre">
+    <!-- CARD “EMPRESA” (igual padrão do card da Home) -->
+    <section class="intro" id="empresa">
       <div class="container">
-        <div class="welcome__card welcome__card--clean">
-          <div class="welcome__left">
-            <div class="kicker">BOAS‑VINDAS</div>
+        <div class="intro__card intro__card--clean">
+          <div class="intro__left">
+            <div class="kicker">EMPRESA</div>
 
-            <h2 class="welcome__title">
-              Seu parceiro<br />
-              de crescimento
+            <h2 class="intro__title">
+              Nossa<br />
+              Empresa
             </h2>
 
-            <p class="welcome__text">
-              Nosso compromisso é ser o seu parceiro de crescimento, fornecendo soluções confiáveis
-              e inovadoras para impulsionar o seu sucesso.
+            <p class="intro__text">
+              Com uma equipe dedicada e experiente, nosso escritório contábil está pronto para
+              fornecer serviços personalizados e eficientes que ajudarão sua empresa a prosperar.
             </p>
           </div>
 
-          <div class="welcome__right">
-            <img src="@/assets/Selo-65.svg" alt="Selo 65 anos" class="sealImg" />
+          <div class="intro__right">
+            <img :src="sealUrl" alt="Selo 65 anos" class="sealImg" />
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SERVIÇOS -->
-    <section class="section" id="servicos">
+    <!-- TEXTO -->
+    <section class="section">
       <div class="container">
-        <div class="section__head">
-          <h2>Serviços</h2>
-          <p>Principais frentes para manter sua empresa regular e bem assessorada.</p>
-        </div>
+        <div class="textCard">
+          <p>
+            Nós, da Viman Contabilidade, somos um escritório dedicado a fornecer serviços de
+            assessoria contábil abrangentes para empresas, desde sua fundação até questões
+            administrativas e consultorias especializadas, incluindo processos de encerramento
+            quando necessário. Contamos com uma equipe de profissionais altamente qualificados nas
+            áreas contábil, fiscal, trabalhista e de assessoria.
+          </p>
 
-        <div class="grid grid--3">
-          <article v-for="s in services" :key="s.title" class="card">
-            <div class="card__icon">{{ s.icon }}</div>
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.desc }}</p>
-            <a
-              class="link"
-              :href="whatsLink(`Olá! Quero saber mais sobre: ${s.title}.`)"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Solicitar atendimento →
-            </a>
-          </article>
+          <p>
+            Nossos serviços de consultoria são abrangentes e englobam todas as áreas mencionadas
+            acima. Além disso, oferecemos planejamento tributário personalizado, analisando as
+            melhores opções de tributação para cada cliente. Nosso compromisso é fornecer serviços
+            de alta qualidade para atender às suas necessidades.
+          </p>
+
+          <p>
+            No cenário econômico atual, marcado pela complexidade e instabilidade, é essencial que
+            os gestores se adaptem rapidamente e busquem o sucesso. A capacidade de uma organização
+            em se adaptar e inovar determina sua trajetória. Com uma equipe altamente capacitada e
+            comprometida em buscar as melhores práticas do mercado, nosso objetivo é agregar valor
+            aos nossos clientes, preparando-os para o sucesso e para enfrentar os desafios do
+            mercado.
+          </p>
+
+          <p class="mb0">
+            Nossa missão é estabelecer estratégias e implementar ações que permitam aos nossos
+            clientes não apenas sobreviver, mas também prosperar e se destacar no mercado em
+            constante evolução.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- FAIXA CONTATO -->
+    <!-- FAIXA CONTATO (igual Home.vue) -->
     <section class="contactbar">
       <div class="container contactbar__inner">
         <div class="contactbar__item">
@@ -148,7 +158,7 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (igual Home.vue) -->
     <footer class="footer">
       <div class="container footer__inner">
         <div>
@@ -159,10 +169,10 @@
         </div>
 
         <div class="footer__links">
-          <a href="#servicos">Serviços</a>
-          <a href="#sobre">Sobre</a>
+          <a href="/#servicos">Serviços</a>
+          <a href="/#sobre">Sobre</a>
           <a href="#contato">Localização</a>
-          <a href="#">Aviso de Privacidade</a>
+          <a href="#top">Empresa</a>
         </div>
       </div>
     </footer>
@@ -183,11 +193,12 @@
 <script setup>
 import { computed, reactive } from 'vue'
 
-import bannerUrl from '@/assets/banner-principal.png'
+import bannerEmpresaUrl from '@/assets/banner-empresa.png'
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
+import sealUrl from '@/assets/selo-65.svg'
 
 const heroStyle = computed(() => ({
-  backgroundImage: `url(${bannerUrl})`,
+  backgroundImage: `url(${bannerEmpresaUrl})`,
 }))
 
 const emblemStyle = computed(() => ({
@@ -210,30 +221,6 @@ function whatsLink(text) {
   const msg = encodeURIComponent(text || 'Olá!')
   return `https://wa.me/${contacts.whatsappE164}?text=${msg}`
 }
-
-const services = [
-  {
-    icon: '📒',
-    title: 'Contabilidade Mensal',
-    desc: 'Escrituração, demonstrações e acompanhamento mensal.',
-  },
-  {
-    icon: '🧾',
-    title: 'Fiscal e Tributário',
-    desc: 'Apurações, SPED/obrigações e conformidade fiscal.',
-  },
-  {
-    icon: '👥',
-    title: 'Departamento Pessoal',
-    desc: 'Folha, eSocial, admissões, rescisões e rotinas.',
-  },
-  {
-    icon: '🏢',
-    title: 'Abertura/Alterações',
-    desc: 'Abertura, alterações contratuais e encerramento.',
-  },
-  { icon: '✅', title: 'Regularizações', desc: 'Pendências, certidões, parcelamentos e ajustes.' },
-]
 </script>
 
 <style scoped>
@@ -253,8 +240,8 @@ const services = [
 }
 
 :global(body) {
-  margin: 0; /* importante para full width real */
-  overflow-x: clip; /* evita scroll horizontal com 100vw */
+  margin: 0;
+  overflow-x: clip;
 }
 
 .home {
@@ -268,7 +255,7 @@ const services = [
   padding: 0 16px;
 }
 
-/* HEADER (centralizado, branco) */
+/* HEADER */
 .header {
   position: sticky;
   top: 0;
@@ -389,7 +376,7 @@ const services = [
   min-height: clamp(620px, 100vh, 980px);
   display: grid;
   align-items: center;
-  padding-bottom: 180px; /* espaço para o card sobrepor */
+  padding-bottom: 180px;
   z-index: 1;
 }
 
@@ -479,8 +466,8 @@ const services = [
   }
 }
 
-/* WELCOME */
-.welcome {
+/* INTRO CARD (mesmo padrão do welcome da Home) */
+.intro {
   position: relative;
   z-index: 5;
   margin-top: -160px;
@@ -494,7 +481,7 @@ const services = [
   text-transform: uppercase;
 }
 
-.welcome__card--clean {
+.intro__card--clean {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -508,7 +495,7 @@ const services = [
   gap: 18px;
 }
 
-.welcome__title {
+.intro__title {
   margin: 8px 0 10px;
   font-size: 56px;
   line-height: 1.02;
@@ -516,7 +503,7 @@ const services = [
   color: var(--blue);
 }
 
-.welcome__text {
+.intro__text {
   margin: 0;
   color: #64748b;
   max-width: 520px;
@@ -524,7 +511,7 @@ const services = [
   line-height: 1.45;
 }
 
-.welcome__right {
+.intro__right {
   display: grid;
   place-items: center;
 }
@@ -540,20 +527,16 @@ const services = [
   .hero--brand {
     padding-bottom: 120px;
   }
-  .welcome {
+  .intro {
     margin-top: -90px;
   }
 
-  .welcome__card--clean {
+  .intro__card--clean {
     grid-template-columns: 1fr;
     padding: 20px;
   }
 
-  .welcome__right {
-    margin-top: 10px;
-  }
-
-  .welcome__title {
+  .intro__title {
     font-size: 36px;
   }
 
@@ -561,7 +544,7 @@ const services = [
     font-size: 14px;
   }
 
-  .welcome__text {
+  .intro__text {
     font-size: 14px;
   }
 }
@@ -577,71 +560,24 @@ const services = [
   border-bottom: 1px solid var(--line);
 }
 
-.section__head {
-  margin-bottom: 14px;
-}
-
-.section__head h2 {
-  margin: 0 0 6px;
-  font-size: 26px;
-}
-
-.section__head p {
-  margin: 0;
-  color: var(--muted);
-}
-
-.grid {
-  display: grid;
-  gap: 12px;
-}
-
-.grid--3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-@media (max-width: 900px) {
-  .grid--3 {
-    grid-template-columns: 1fr;
-  }
-}
-
-.card {
-  background: var(--card);
+/* TEXTO CARD */
+.textCard {
+  background: #fff;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  padding: 22px;
+  color: #0f172a;
 }
 
-.card__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: rgba(47, 43, 124, 0.08);
-  border: 1px solid rgba(47, 43, 124, 0.16);
-  margin-bottom: 10px;
+.textCard p {
+  margin: 0 0 12px;
+  line-height: 1.65;
+  color: #0f172a;
 }
 
-.card h3 {
-  margin: 0 0 6px;
-  color: var(--blue2);
-}
-
-.card p {
-  margin: 0 0 10px;
-  color: var(--muted);
-}
-
-.link {
-  text-decoration: none;
-  font-weight: 900;
-  color: var(--blue2);
-}
-
-.muted {
-  color: var(--muted);
+.mb0 {
+  margin-bottom: 0 !important;
 }
 
 /* CONTACT BAR */
@@ -685,7 +621,7 @@ const services = [
 
 /* MAP (FULL WIDTH) */
 .section--map {
-  padding: 0; /* remove o padding da .section nessa área */
+  padding: 0;
 }
 
 .map {
@@ -703,15 +639,11 @@ const services = [
   min-height: 420px;
 }
 
-/* overrides para “colar” o mapa na largura total da viewport */
 .map--full {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-
   min-height: 520px;
-
-  /* visual para full-bleed */
   border-radius: 0;
   border-left: 0;
   border-right: 0;
@@ -745,6 +677,10 @@ const services = [
   color: #e2e8f0;
   text-decoration: none;
   font-weight: 700;
+}
+
+.muted {
+  color: var(--muted);
 }
 
 .footer .muted {

@@ -28,6 +28,12 @@ const router = createRouter({
       component: () => import('../views/Privacidade.vue'),
     },
 
+    {
+      path: '/empresa',
+      name: 'empresa',
+      component: () => import('../views/Empresa.vue'),
+    },
+
     // opcional: 404
     {
       path: '/:pathMatch(.*)*',
