@@ -137,18 +137,16 @@
       </div>
     </section>
 
-    <!-- MAPA (full width) -->
-    <section class="section section--alt" id="contato">
-      <div class="container">
-        <div class="map map--full">
-          <iframe
-            title="Mapa - Viman Contabilidade"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            :src="mapEmbedUrl"
-            allowfullscreen
-          />
-        </div>
+    <!-- MAPA (FULL WIDTH) -->
+    <section class="section section--alt section--map" id="contato">
+      <div class="map map--full">
+        <iframe
+          title="Mapa - Viman Contabilidade"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          :src="mapEmbedUrl"
+          allowfullscreen
+        />
       </div>
     </section>
 
@@ -254,6 +252,11 @@ const services = [
 
 :global(html) {
   scroll-behavior: smooth;
+}
+
+:global(body) {
+  margin: 0; /* importante para full width real */
+  overflow-x: clip; /* evita scroll horizontal com 100vw */
 }
 
 .home {
@@ -682,7 +685,11 @@ const services = [
   text-decoration: none;
 }
 
-/* MAP */
+/* MAP (FULL WIDTH) */
+.section--map {
+  padding: 0; /* remove o padding da .section nessa área */
+}
+
 .map {
   background: #fff;
   border: 1px solid var(--line);
@@ -698,9 +705,18 @@ const services = [
   min-height: 420px;
 }
 
+/* overrides para “colar” o mapa na largura total da viewport */
 .map--full {
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
   min-height: 520px;
+
+  /* visual para full-bleed */
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
 }
 
 .map--full iframe {
