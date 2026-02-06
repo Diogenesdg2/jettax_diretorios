@@ -1,22 +1,17 @@
 <template>
   <main class="home">
-    <!-- âncora do Home -->
+    <!-- âncora do topo -->
     <div id="top"></div>
 
-    <!-- HEADER (centralizado) -->
+    <!-- HEADER -->
     <header class="header">
       <div class="container header__inner">
         <nav class="nav" aria-label="Navegação principal">
           <div class="nav__menu">
-            <a class="nav__link nav__link--active" href="#top">Home</a>
-            <a class="nav__link" href="#sobre">Empresa</a>
-            <a class="nav__link" href="#servicos">Serviços</a>
-
-            <!-- Currículos: como a seção foi removida, direciona para WhatsApp -->
-            <router-link class="nav__link" to="/curriculos" active-class="nav__link--active">
-              Currículos
-            </router-link>
-
+            <a class="nav__link" href="/#top">Home</a>
+            <a class="nav__link" href="/#sobre">Empresa</a>
+            <a class="nav__link" href="/#servicos">Serviços</a>
+            <a class="nav__link nav__link--active" href="#curriculos">Currículos</a>
             <a class="nav__link" href="#contato">Contato</a>
           </div>
 
@@ -32,10 +27,12 @@
       </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero hero--brand" aria-label="Viman Contabilidade" :style="heroStyle">
-      <div class="hero__tint"></div>
-
+    <!-- HERO (banner-curriculos) -->
+    <section
+      class="hero hero--brand"
+      aria-label="Currículos - Viman Contabilidade"
+      :style="heroStyle"
+    >
       <div class="hero__content">
         <div class="hero__brandStack">
           <div class="hero__emblem" :style="emblemStyle" aria-hidden="true"></div>
@@ -48,21 +45,22 @@
       </div>
     </section>
 
-    <!-- BOAS-VINDAS -->
-    <section class="welcome" id="sobre">
+    <!-- CARD (mesmo padrão da Home) -->
+    <section class="welcome" id="curriculos">
       <div class="container">
         <div class="welcome__card welcome__card--clean">
           <div class="welcome__left">
-            <div class="kicker">BOAS‑VINDAS</div>
+            <div class="kicker">CURRÍCULOS</div>
 
             <h2 class="welcome__title">
-              Seu parceiro<br />
-              de crescimento
+              Trabalhe<br />
+              Conosco
             </h2>
 
             <p class="welcome__text">
-              Nosso compromisso é ser o seu parceiro de crescimento, fornecendo soluções confiáveis
-              e inovadoras para impulsionar o seu sucesso.
+              Estamos sempre à procura de talentos para se juntarem à nossa equipe! Se você tem
+              paixão por contabilidade e áreas afins e procura fazer parte de uma equipe dinâmica e
+              colaborativa, cadastre seu currículo.
             </p>
           </div>
 
@@ -73,66 +71,95 @@
       </div>
     </section>
 
-    <!-- SERVIÇOS -->
-    <section class="section" id="servicos">
+    <!-- FORMULÁRIO -->
+    <section class="section">
       <div class="container">
-        <div class="section__head">
-          <h2>Serviços</h2>
-          <p>Principais frentes para manter sua empresa regular e bem assessorada.</p>
-        </div>
+        <form class="formCard" @submit.prevent="onSubmit">
+          <div class="field">
+            <input
+              v-model.trim="form.name"
+              class="input"
+              type="text"
+              name="name"
+              required
+              placeholder="* Digite seu nome"
+              autocomplete="name"
+            />
+          </div>
 
-        <div class="grid grid--3">
-          <article v-for="s in services" :key="s.title" class="card">
-            <div class="card__icon">{{ s.icon }}</div>
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.desc }}</p>
-            <a
-              class="link"
-              :href="whatsLink(`Olá! Quero saber mais sobre: ${s.title}.`)"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Solicitar atendimento →
-            </a>
-          </article>
-        </div>
+          <div class="field">
+            <input
+              v-model.trim="form.email"
+              class="input"
+              type="email"
+              name="email"
+              required
+              placeholder="* Digite seu E-mail"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="field">
+            <input
+              v-model.trim="form.phone"
+              class="input"
+              type="tel"
+              name="phone"
+              required
+              placeholder="* Digite seu Celular com DDD"
+              inputmode="tel"
+              autocomplete="tel"
+            />
+            <div class="hint">
+              Apenas números e caracteres de telefone (#, -, *, etc.) são aceitos.
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="fileLabel">
+              <span class="fileLabel__text">* Anexar seu Currículo em PDF ou DOC</span>
+
+              <div class="fileRow">
+                <input
+                  class="fileInput"
+                  type="file"
+                  name="cv"
+                  required
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  @change="onFileChange"
+                />
+                <span class="fileName">
+                  {{ form.file?.name || 'Nenhum ficheiro selecionado' }}
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <div class="consent">
+            <label class="consent__label">
+              <input v-model="form.consent" type="checkbox" required />
+              <span>
+                Tenho ciência e concordo que meus dados aqui informados poderão ser utilizados pela
+                Viman Contabilidade de acordo com os termos apresentados no
+                <a class="privacyLink" :href="privacyUrl" target="_blank" rel="noreferrer">
+                  AVISO DE PRIVACIDADE
+                </a>
+              </span>
+            </label>
+          </div>
+
+          <button class="submit" type="submit" :disabled="submitting">
+            {{ submitting ? 'ENVIANDO...' : 'ENVIAR' }}
+          </button>
+
+          <div v-if="status" class="status" :class="status.type">
+            {{ status.message }}
+          </div>
+        </form>
       </div>
     </section>
 
-    <!-- FAIXA CONTATO -->
-    <section class="contactbar">
-      <div class="container contactbar__inner">
-        <div class="contactbar__item">
-          <span class="ci">📞</span>
-          <div>
-            <div class="label">Entre em contato</div>
-            <a class="value" :href="`tel:${contacts.phoneRaw}`">{{ contacts.phone }}</a>
-          </div>
-        </div>
-
-        <div class="contactbar__item">
-          <span class="ci">✉️</span>
-          <div>
-            <div class="label">E-mail</div>
-            <a class="value" :href="`mailto:${contacts.email}`">{{ contacts.email }}</a>
-          </div>
-        </div>
-
-        <div class="contactbar__item contactbar__cta">
-          <a
-            class="btn btn--small"
-            :href="whatsLink('Olá! Quero falar com a Viman Contabilidade.')"
-            target="_blank"
-            rel="noreferrer"
-          >
-            WhatsApp
-          </a>
-          <a class="btn btn--small btn--ghost" href="#contato">Ver mapa</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- MAPA (FULL WIDTH) -->
+    <!-- MAPA (full width) -->
     <section class="section section--alt section--map" id="contato">
       <div class="map map--full">
         <iframe
@@ -156,10 +183,10 @@
         </div>
 
         <div class="footer__links">
-          <a href="#servicos">Serviços</a>
-          <a href="#sobre">Sobre</a>
+          <a href="/#servicos">Serviços</a>
+          <a href="/#sobre">Sobre</a>
           <a href="#contato">Localização</a>
-          <a href="#">Aviso de Privacidade</a>
+          <a :href="privacyUrl" target="_blank" rel="noreferrer">Aviso de Privacidade</a>
         </div>
       </div>
     </footer>
@@ -167,7 +194,7 @@
     <!-- WhatsApp flutuante -->
     <a
       class="wafloat"
-      :href="whatsLink('Olá! Quero atendimento.')"
+      :href="whatsLink('Olá! Quero enviar meu currículo para a Viman.')"
       target="_blank"
       rel="noreferrer"
       aria-label="WhatsApp"
@@ -178,13 +205,13 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
-import bannerUrl from '@/assets/banner-principal.png'
+import bannerCurriculosUrl from '@/assets/banner-curriculos.png' // ajuste a extensão se necessário
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
 
 const heroStyle = computed(() => ({
-  backgroundImage: `url(${bannerUrl})`,
+  backgroundImage: `url(${bannerCurriculosUrl})`,
 }))
 
 const emblemStyle = computed(() => ({
@@ -192,11 +219,10 @@ const emblemStyle = computed(() => ({
 }))
 
 const contacts = reactive({
-  phone: '(19) 3571-3707',
-  phoneRaw: '1935713707',
-  email: 'contato@viman.com.br',
   whatsappE164: '551935713707',
 })
+
+const privacyUrl = '/privacidade' // ajuste para a rota/URL real do seu aviso de privacidade
 
 const mapEmbedUrl = computed(() => {
   const q = encodeURIComponent('Viman Contabilidade, Leme - SP')
@@ -208,29 +234,52 @@ function whatsLink(text) {
   return `https://wa.me/${contacts.whatsappE164}?text=${msg}`
 }
 
-const services = [
-  {
-    icon: '📒',
-    title: 'Contabilidade Mensal',
-    desc: 'Escrituração, demonstrações e acompanhamento mensal.',
-  },
-  {
-    icon: '🧾',
-    title: 'Fiscal e Tributário',
-    desc: 'Apurações, SPED/obrigações e conformidade fiscal.',
-  },
-  {
-    icon: '👥',
-    title: 'Departamento Pessoal',
-    desc: 'Folha, eSocial, admissões, rescisões e rotinas.',
-  },
-  {
-    icon: '🏢',
-    title: 'Abertura/Alterações',
-    desc: 'Abertura, alterações contratuais e encerramento.',
-  },
-  { icon: '✅', title: 'Regularizações', desc: 'Pendências, certidões, parcelamentos e ajustes.' },
-]
+const form = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  file: null,
+  consent: false,
+})
+
+const submitting = ref(false)
+const status = ref(null)
+
+function onFileChange(e) {
+  const file = e?.target?.files?.[0] || null
+  form.file = file
+}
+
+async function onSubmit() {
+  submitting.value = true
+  status.value = null
+
+  try {
+    // Aqui você integra com seu backend (FormData + fetch/axios).
+    // Exemplo (quando tiver endpoint):
+    // const fd = new FormData()
+    // fd.append('name', form.name)
+    // fd.append('email', form.email)
+    // fd.append('phone', form.phone)
+    // fd.append('cv', form.file)
+    // fd.append('consent', String(form.consent))
+    // await fetch('/api/curriculos', { method: 'POST', body: fd })
+
+    await new Promise((r) => setTimeout(r, 600))
+
+    status.value = { type: 'ok', message: 'Currículo enviado com sucesso.' }
+
+    form.name = ''
+    form.email = ''
+    form.phone = ''
+    form.file = null
+    form.consent = false
+  } catch (e) {
+    status.value = { type: 'err', message: 'Não foi possível enviar. Tente novamente.' }
+  } finally {
+    submitting.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -243,6 +292,7 @@ const services = [
   --blue: #2f2b7c;
   --blue2: #1f1b57;
   --gold: #f3d36b;
+  --green: #68b734;
 }
 
 :global(html) {
@@ -250,8 +300,8 @@ const services = [
 }
 
 :global(body) {
-  margin: 0; /* importante para full width real */
-  overflow-x: clip; /* evita scroll horizontal com 100vw */
+  margin: 0;
+  overflow-x: clip;
 }
 
 .home {
@@ -265,7 +315,7 @@ const services = [
   padding: 0 16px;
 }
 
-/* HEADER (centralizado, branco) */
+/* HEADER */
 .header {
   position: sticky;
   top: 0;
@@ -351,29 +401,6 @@ const services = [
   }
 }
 
-/* BUTTONS */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--blue2);
-  background: var(--blue2);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 800;
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--blue2);
-}
-
-.btn--small {
-  padding: 8px 12px;
-}
-
 /* HERO */
 .hero {
   background-position: center center;
@@ -386,12 +413,8 @@ const services = [
   min-height: clamp(620px, 100vh, 980px);
   display: grid;
   align-items: center;
-  padding-bottom: 180px; /* espaço para o card sobrepor */
+  padding-bottom: 180px;
   z-index: 1;
-}
-
-.hero__tint {
-  display: none;
 }
 
 .hero__content {
@@ -457,7 +480,6 @@ const services = [
   line-height: 1.1;
   font-size: clamp(18px, 2.2vw, 34px);
   text-transform: uppercase;
-  transform: translateX(0px);
 }
 
 @media (max-width: 700px) {
@@ -476,7 +498,7 @@ const services = [
   }
 }
 
-/* WELCOME */
+/* CARD (welcome) */
 .welcome {
   position: relative;
   z-index: 5;
@@ -516,9 +538,9 @@ const services = [
 .welcome__text {
   margin: 0;
   color: #64748b;
-  max-width: 520px;
+  max-width: 620px;
   font-size: 16px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .welcome__right {
@@ -527,7 +549,7 @@ const services = [
 }
 
 .sealImg {
-  width: 240px;
+  width: 260px;
   max-width: 100%;
   height: auto;
   display: block;
@@ -537,6 +559,7 @@ const services = [
   .hero--brand {
     padding-bottom: 120px;
   }
+
   .welcome {
     margin-top: -90px;
   }
@@ -544,10 +567,6 @@ const services = [
   .welcome__card--clean {
     grid-template-columns: 1fr;
     padding: 20px;
-  }
-
-  .welcome__right {
-    margin-top: 10px;
   }
 
   .welcome__title {
@@ -563,7 +582,7 @@ const services = [
   }
 }
 
-/* SECTIONS */
+/* SECTION */
 .section {
   padding: 42px 0;
 }
@@ -574,115 +593,134 @@ const services = [
   border-bottom: 1px solid var(--line);
 }
 
-.section__head {
+/* FORM */
+.formCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.field {
+  display: grid;
+  gap: 8px;
   margin-bottom: 14px;
 }
 
-.section__head h2 {
-  margin: 0 0 6px;
-  font-size: 26px;
+.input {
+  width: 100%;
+  height: 48px;
+  border-radius: 4px;
+  border: 1px solid #94a3b8;
+  padding: 0 14px;
+  font-size: 15px;
+  outline: none;
+  background: #fff;
+  box-sizing: border-box;
 }
 
-.section__head p {
-  margin: 0;
-  color: var(--muted);
+.input:focus {
+  border-color: var(--blue2);
+  box-shadow: 0 0 0 3px rgba(31, 27, 87, 0.12);
 }
 
-.grid {
+.hint {
+  font-size: 12px;
+  color: #111827;
+  opacity: 0.85;
+}
+
+.fileLabel {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
-.grid--3 {
-  grid-template-columns: repeat(3, 1fr);
+.fileLabel__text {
+  font-size: 13px;
+  color: #16a34a;
+  font-weight: 800;
 }
 
-@media (max-width: 900px) {
-  .grid--3 {
-    grid-template-columns: 1fr;
-  }
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px;
-}
-
-.card__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: rgba(47, 43, 124, 0.08);
-  border: 1px solid rgba(47, 43, 124, 0.16);
-  margin-bottom: 10px;
-}
-
-.card h3 {
-  margin: 0 0 6px;
-  color: var(--blue2);
-}
-
-.card p {
-  margin: 0 0 10px;
-  color: var(--muted);
-}
-
-.link {
-  text-decoration: none;
-  font-weight: 900;
-  color: var(--blue2);
-}
-
-.muted {
-  color: var(--muted);
-}
-
-/* CONTACT BAR */
-.contactbar {
-  background: var(--gold);
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.contactbar__inner {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  padding: 16px 0;
-  flex-wrap: wrap;
-}
-
-.contactbar__item {
+.fileRow {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-.ci {
-  font-size: 18px;
+.fileInput {
+  max-width: 240px;
 }
 
-.label {
-  font-size: 12px;
-  font-weight: 900;
-  color: rgba(15, 23, 42, 0.75);
-  letter-spacing: 0.04em;
+.fileName {
+  font-size: 13px;
+  color: #334155;
 }
 
-.value {
-  font-weight: 900;
+.consent {
+  background: rgba(243, 211, 107, 0.65);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0 14px;
+}
+
+.consent__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
   color: #0f172a;
-  text-decoration: none;
+  line-height: 1.35;
+  font-weight: 600;
 }
 
-/* MAP (FULL WIDTH) */
+.privacyLink {
+  color: #f97316;
+  font-weight: 900;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.privacyLink:hover {
+  text-decoration: underline;
+}
+
+.submit {
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 12px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.status.ok {
+  color: #15803d;
+}
+
+.status.err {
+  color: #b91c1c;
+}
+
+/* MAP (full width) */
 .section--map {
-  padding: 0; /* remove o padding da .section nessa área */
+  padding: 0;
 }
 
 .map {
@@ -700,7 +738,6 @@ const services = [
   min-height: 420px;
 }
 
-/* overrides para “colar” o mapa na largura total da viewport */
 .map--full {
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -708,7 +745,6 @@ const services = [
 
   min-height: 520px;
 
-  /* visual para full-bleed */
   border-radius: 0;
   border-left: 0;
   border-right: 0;
@@ -742,6 +778,10 @@ const services = [
   color: #e2e8f0;
   text-decoration: none;
   font-weight: 700;
+}
+
+.muted {
+  color: var(--muted);
 }
 
 .footer .muted {

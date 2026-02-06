@@ -11,9 +11,21 @@ const router = createRouter({
     },
 
     {
+      path: '/curriculos',
+      name: 'curriculos',
+      component: () => import('../views/Curriculos.vue'), // ajuste o nome do arquivo se estiver diferente
+    },
+
+    {
       path: '/migrador-notas',
       name: 'migrador-notas',
       component: () => import('../views/MigradorNotas.vue'),
+    },
+
+    {
+      path: '/privacidade',
+      name: 'privacidade',
+      component: () => import('../views/Privacidade.vue'),
     },
 
     // opcional: 404
