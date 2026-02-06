@@ -195,7 +195,7 @@ import { computed, reactive } from 'vue'
 
 import bannerEmpresaUrl from '@/assets/banner-empresa.png'
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
-import sealUrl from '@/assets/selo-65.svg'
+import sealUrl from '@/assets/Selo-65.svg'
 
 const heroStyle = computed(() => ({
   backgroundImage: `url(${bannerEmpresaUrl})`,
