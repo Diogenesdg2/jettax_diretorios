@@ -1,23 +1,22 @@
 <template>
   <main class="home">
-    <!-- âncora do Home -->
     <div id="top"></div>
 
-    <!-- HEADER (centralizado) -->
+    <!-- HEADER (igual Home.vue) -->
     <header class="header">
       <div class="container header__inner">
         <nav class="nav" aria-label="Navegação principal">
           <div class="nav__menu">
-            <a class="nav__link nav__link--active" href="#top">Home</a>
+            <a class="nav__link" href="/#top">Home</a>
 
             <router-link class="nav__link" to="/empresa" active-class="nav__link--active">
               Empresa
             </router-link>
+
             <router-link class="nav__link" to="/servicos" active-class="nav__link--active">
               Serviços
             </router-link>
 
-            <!-- Currículos: como a seção foi removida, direciona para WhatsApp -->
             <router-link class="nav__link" to="/curriculos" active-class="nav__link--active">
               Currículos
             </router-link>
@@ -37,8 +36,12 @@
       </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero hero--brand" aria-label="Viman Contabilidade" :style="heroStyle">
+    <!-- HERO (banner-servicos.png) -->
+    <section
+      class="hero hero--brand"
+      aria-label="Serviços - Viman Contabilidade"
+      :style="heroStyle"
+    >
       <div class="hero__tint"></div>
 
       <div class="hero__content">
@@ -53,58 +56,106 @@
       </div>
     </section>
 
-    <!-- BOAS-VINDAS -->
-    <section class="welcome" id="sobre">
+    <!-- CARD (igual padrão do welcome/intro) -->
+    <section class="intro" id="servicos">
       <div class="container">
-        <div class="welcome__card welcome__card--clean">
-          <div class="welcome__left">
-            <div class="kicker">BOAS‑VINDAS</div>
+        <div class="intro__card intro__card--clean">
+          <div class="intro__left">
+            <div class="kicker">SERVIÇOS</div>
 
-            <h2 class="welcome__title">
-              Seu parceiro<br />
-              de crescimento
+            <h2 class="intro__title">
+              Nossos<br />
+              Serviços
             </h2>
 
-            <p class="welcome__text">
-              Nosso compromisso é ser o seu parceiro de crescimento, fornecendo soluções confiáveis
-              e inovadoras para impulsionar o seu sucesso.
+            <p class="intro__text">
+              Desde a contabilidade básica até consultoria fiscal avançada, estamos aqui para ajudar
+              que suas operações estejam em conformidade com as regulamentações e otimizadas para o
+              sucesso financeiro.
             </p>
           </div>
 
-          <div class="welcome__right">
-            <img src="@/assets/Selo-65.svg" alt="Selo 65 anos" class="sealImg" />
+          <div class="intro__right">
+            <img :src="sealUrl" alt="Selo 65 anos" class="sealImg" />
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SERVIÇOS -->
-    <section class="section" id="servicos">
+    <!-- CARDS (conteúdo da 2ª imagem) -->
+    <section class="section">
       <div class="container">
-        <div class="section__head">
-          <h2>Serviços</h2>
-          <p>Principais frentes para manter sua empresa regular e bem assessorada.</p>
+        <div class="grid grid--4">
+          <article class="card card--service">
+            <div class="card__icon">💰</div>
+            <h3>Contabilidade<br />Empresarial</h3>
+            <p>
+              Oferecemos orientação sobre o regime contábil mais apropriado para o seu negócio,
+              considerando os custos e o fluxo de caixa
+            </p>
+          </article>
+
+          <article class="card card--service">
+            <div class="card__icon">📄</div>
+            <h3>Obrigações<br />Trabalhistas</h3>
+            <p>
+              Atuamos na área de gestão de relações de trabalho e previdenciária, com uma equipe de
+              profissionais qualificados e treinados
+            </p>
+          </article>
+
+          <article class="card card--service">
+            <div class="card__icon">📈</div>
+            <h3>Assessoria<br />Empresarial</h3>
+            <p>
+              Provemos todas as informações necessárias e assistência técnica aos diferentes setores
+              que compõe a sua empresa
+            </p>
+          </article>
+
+          <article class="card card--service">
+            <div class="card__icon">🧾</div>
+            <h3>Departamento<br />Fiscal</h3>
+            <p>
+              Efetuamos o registro de documentos fiscais e cálculo dos impostos e deveres fiscais
+              junto às esferas de governo
+            </p>
+          </article>
         </div>
 
-        <div class="grid grid--3">
-          <article v-for="s in services" :key="s.title" class="card">
-            <div class="card__icon">{{ s.icon }}</div>
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.desc }}</p>
-            <a
-              class="link"
-              :href="whatsLink(`Olá! Quero saber mais sobre: ${s.title}.`)"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Solicitar atendimento →
-            </a>
-          </article>
+        <div class="textCard textCard--mt">
+          <p>
+            Para garantir uma gestão eficaz e tomada de decisões informadas em uma empresa, é
+            imprescindível manter-se atualizado sobre a legislação vigente. Nossa equipe está
+            dedicada a fornecer regularmente aos nossos clientes as informações essenciais para o
+            funcionamento adequado de seus negócios. Realizamos uma apuração semanal dos impostos
+            estaduais (ICMS), federais (IRPJ, IRPF, IPI) e municipais (ISS), quando aplicável,
+            fornecendo informações sobre os prazos de vencimento para os pagamentos necessários,
+            alinhados com a programação financeira de cada empresa.
+          </p>
+
+          <p>
+            Oferecemos suporte e acompanhamento durante fiscalizações, sejam elas de âmbito federal,
+            estadual, municipal ou trabalhista, por meio de profissionais qualificados e uma
+            infraestrutura completa, visando garantir tranquilidade e fornecer informações precisas
+            em todas as etapas do processo de fiscalização.
+          </p>
+
+          <p class="mb0">
+            Atualmente, os serviços prestados às grandes empresas demandam alta agilidade na prática
+            contábil. Para atender às necessidades do setor, adotamos tecnologias de ponta em
+            sistemas de computação disponíveis no mercado, abrangendo tanto equipamentos quanto
+            infraestrutura de rede. Dessa forma, a computação substitui os métodos tradicionais de
+            escrituração fiscal, folha de pagamento e outros controles, permitindo a realização
+            rápida e eficiente de diversas rotinas contábeis, como contabilidade gerencial e geral,
+            processamento de folha de pagamento, gestão de contas a pagar e a receber, controle de
+            estoques e garantia de recebimento para os industriais das mercadorias vendidas.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- FAIXA CONTATO -->
+    <!-- FAIXA CONTATO (igual Home.vue) -->
     <section class="contactbar">
       <div class="container contactbar__inner">
         <div class="contactbar__item">
@@ -150,7 +201,7 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (igual Home.vue) -->
     <footer class="footer">
       <div class="container footer__inner">
         <div>
@@ -161,10 +212,10 @@
         </div>
 
         <div class="footer__links">
-          <a href="#servicos">Serviços</a>
-          <a href="#sobre">Sobre</a>
+          <a href="/#servicos">Serviços</a>
+          <a href="/#sobre">Sobre</a>
           <a href="#contato">Localização</a>
-          <a href="#">Aviso de Privacidade</a>
+          <a href="#top">Serviços</a>
         </div>
       </div>
     </footer>
@@ -185,11 +236,12 @@
 <script setup>
 import { computed, reactive } from 'vue'
 
-import bannerUrl from '@/assets/banner-principal.png'
+import bannerServicosUrl from '@/assets/banner-servicos.png'
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
+import sealUrl from '@/assets/Selo-65.svg' // mesmo padrão da Home.vue
 
 const heroStyle = computed(() => ({
-  backgroundImage: `url(${bannerUrl})`,
+  backgroundImage: `url(${bannerServicosUrl})`,
 }))
 
 const emblemStyle = computed(() => ({
@@ -212,33 +264,10 @@ function whatsLink(text) {
   const msg = encodeURIComponent(text || 'Olá!')
   return `https://wa.me/${contacts.whatsappE164}?text=${msg}`
 }
-
-const services = [
-  {
-    icon: '📒',
-    title: 'Contabilidade Mensal',
-    desc: 'Escrituração, demonstrações e acompanhamento mensal.',
-  },
-  {
-    icon: '🧾',
-    title: 'Fiscal e Tributário',
-    desc: 'Apurações, SPED/obrigações e conformidade fiscal.',
-  },
-  {
-    icon: '👥',
-    title: 'Departamento Pessoal',
-    desc: 'Folha, eSocial, admissões, rescisões e rotinas.',
-  },
-  {
-    icon: '🏢',
-    title: 'Abertura/Alterações',
-    desc: 'Abertura, alterações contratuais e encerramento.',
-  },
-  { icon: '✅', title: 'Regularizações', desc: 'Pendências, certidões, parcelamentos e ajustes.' },
-]
 </script>
 
 <style scoped>
+/* (mesma base da Home.vue) */
 :global(:root) {
   --bg: #f6f7fb;
   --text: var(--blue2);
@@ -255,8 +284,8 @@ const services = [
 }
 
 :global(body) {
-  margin: 0; /* importante para full width real */
-  overflow-x: clip; /* evita scroll horizontal com 100vw */
+  margin: 0;
+  overflow-x: clip;
 }
 
 .home {
@@ -270,7 +299,7 @@ const services = [
   padding: 0 16px;
 }
 
-/* HEADER (centralizado, branco) */
+/* HEADER */
 .header {
   position: sticky;
   top: 0;
@@ -391,7 +420,7 @@ const services = [
   min-height: clamp(620px, 100vh, 980px);
   display: grid;
   align-items: center;
-  padding-bottom: 180px; /* espaço para o card sobrepor */
+  padding-bottom: 180px;
   z-index: 1;
 }
 
@@ -462,7 +491,6 @@ const services = [
   line-height: 1.1;
   font-size: clamp(18px, 2.2vw, 34px);
   text-transform: uppercase;
-  transform: translateX(0px);
 }
 
 @media (max-width: 700px) {
@@ -481,8 +509,8 @@ const services = [
   }
 }
 
-/* WELCOME */
-.welcome {
+/* INTRO CARD */
+.intro {
   position: relative;
   z-index: 5;
   margin-top: -160px;
@@ -496,7 +524,7 @@ const services = [
   text-transform: uppercase;
 }
 
-.welcome__card--clean {
+.intro__card--clean {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -510,7 +538,7 @@ const services = [
   gap: 18px;
 }
 
-.welcome__title {
+.intro__title {
   margin: 8px 0 10px;
   font-size: 56px;
   line-height: 1.02;
@@ -518,15 +546,15 @@ const services = [
   color: var(--blue);
 }
 
-.welcome__text {
+.intro__text {
   margin: 0;
   color: #64748b;
-  max-width: 520px;
+  max-width: 560px;
   font-size: 16px;
   line-height: 1.45;
 }
 
-.welcome__right {
+.intro__right {
   display: grid;
   place-items: center;
 }
@@ -542,20 +570,16 @@ const services = [
   .hero--brand {
     padding-bottom: 120px;
   }
-  .welcome {
+  .intro {
     margin-top: -90px;
   }
 
-  .welcome__card--clean {
+  .intro__card--clean {
     grid-template-columns: 1fr;
     padding: 20px;
   }
 
-  .welcome__right {
-    margin-top: 10px;
-  }
-
-  .welcome__title {
+  .intro__title {
     font-size: 36px;
   }
 
@@ -563,12 +587,12 @@ const services = [
     font-size: 14px;
   }
 
-  .welcome__text {
+  .intro__text {
     font-size: 14px;
   }
 }
 
-/* SECTIONS */
+/* SECTIONS + GRID */
 .section {
   padding: 42px 0;
 }
@@ -579,31 +603,23 @@ const services = [
   border-bottom: 1px solid var(--line);
 }
 
-.section__head {
-  margin-bottom: 14px;
-}
-
-.section__head h2 {
-  margin: 0 0 6px;
-  font-size: 26px;
-}
-
-.section__head p {
-  margin: 0;
-  color: var(--muted);
-}
-
 .grid {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
-.grid--3 {
-  grid-template-columns: repeat(3, 1fr);
+.grid--4 {
+  grid-template-columns: repeat(4, 1fr);
 }
 
-@media (max-width: 900px) {
-  .grid--3 {
+@media (max-width: 980px) {
+  .grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .grid--4 {
     grid-template-columns: 1fr;
   }
 }
@@ -612,34 +628,55 @@ const services = [
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 14px;
+  padding: 16px;
 }
 
 .card__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   background: rgba(47, 43, 124, 0.08);
   border: 1px solid rgba(47, 43, 124, 0.16);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-size: 20px;
 }
 
 .card h3 {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
   color: var(--blue2);
+  line-height: 1.1;
 }
 
 .card p {
-  margin: 0 0 10px;
+  margin: 0;
   color: var(--muted);
+  line-height: 1.55;
 }
 
-.link {
-  text-decoration: none;
-  font-weight: 900;
-  color: var(--blue2);
+/* TEXTO CARD */
+.textCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  padding: 22px;
+  color: #0f172a;
+}
+
+.textCard--mt {
+  margin-top: 18px;
+}
+
+.textCard p {
+  margin: 0 0 12px;
+  line-height: 1.65;
+  color: #0f172a;
+}
+
+.mb0 {
+  margin-bottom: 0 !important;
 }
 
 .muted {
@@ -687,7 +724,7 @@ const services = [
 
 /* MAP (FULL WIDTH) */
 .section--map {
-  padding: 0; /* remove o padding da .section nessa área */
+  padding: 0;
 }
 
 .map {
@@ -705,15 +742,11 @@ const services = [
   min-height: 420px;
 }
 
-/* overrides para “colar” o mapa na largura total da viewport */
 .map--full {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-
   min-height: 520px;
-
-  /* visual para full-bleed */
   border-radius: 0;
   border-left: 0;
   border-right: 0;

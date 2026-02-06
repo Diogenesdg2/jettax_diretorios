@@ -34,6 +34,12 @@ const router = createRouter({
       component: () => import('../views/Empresa.vue'),
     },
 
+    {
+      path: '/servicos',
+      name: 'servicos',
+      component: () => import('../views/Servicos.vue'),
+    },
+
     // opcional: 404
     {
       path: '/:pathMatch(.*)*',
