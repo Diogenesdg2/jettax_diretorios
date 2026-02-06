@@ -207,7 +207,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 
-import bannerCurriculosUrl from '@/assets/banner-curriculos.png' // ajuste a extensão se necessário
+import bannerCurriculosUrl from '@/assets/Banner-curriculos.png' // ajuste a extensão se necessário
 import logoWhiteUrl from '@/assets/logo-viman-horizontal-branco.svg'
 
 const heroStyle = computed(() => ({
