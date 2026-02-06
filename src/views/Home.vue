@@ -13,11 +13,11 @@
             <router-link class="nav__link" to="/empresa" active-class="nav__link--active">
               Empresa
             </router-link>
+
             <router-link class="nav__link" to="/servicos" active-class="nav__link--active">
               Serviços
             </router-link>
 
-            <!-- Currículos: como a seção foi removida, direciona para WhatsApp -->
             <router-link class="nav__link" to="/curriculos" active-class="nav__link--active">
               Currículos
             </router-link>
@@ -25,14 +25,28 @@
             <a class="nav__link" href="#contato">Contato</a>
           </div>
 
-          <a
-            class="nav__cta"
-            href="https://vip.acessorias.com/vimancontabilidade"
-            target="_blank"
-            rel="noreferrer"
-          >
-            ÁREA DO CLIENTE
-          </a>
+          <!-- AÇÕES (2 botões lado a lado) -->
+          <div class="nav__actions">
+            <a
+              class="nav__cta"
+              href="https://vip.acessorias.com/vimancontabilidade"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ÁREA DO CLIENTE
+            </a>
+
+            <a
+              class="nav__cta"
+              href="#"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Área do colaborador (substitua o link)"
+              title="Substitua o link da Área do Colaborador"
+            >
+              ÁREA DO COLABORADOR
+            </a>
+          </div>
         </nav>
       </div>
     </header>
@@ -296,6 +310,13 @@ const services = [
   justify-content: center;
   align-items: center;
   gap: 56px;
+  flex-wrap: wrap;
+}
+
+.nav__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
