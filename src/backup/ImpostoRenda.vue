@@ -65,8 +65,6 @@
         />
       </label>
 
-      <!-- REMOVIDO: 4.4 Moléstia grave -->
-
       <label>
         4.5 Lucros e dividendos (isentos)
         <input
@@ -104,7 +102,7 @@
         {{ loading ? 'Gerando...' : 'Gerar PDF' }}
       </button>
 
-      <small v-if="error" style="color: #b91c1c">{{ error }}</small>
+      <small v-if="error" style="color: #b91c1c; white-space: pre-wrap">{{ error }}</small>
     </form>
   </main>
 </template>
@@ -158,7 +156,7 @@ function toUpper(v) {
   return String(v ?? '').toUpperCase()
 }
 
-// sempre 2 casas decimais (pt-BR): 2400000 -> 24.000,00
+// sempre 2 casas decimais (pt-BR)
 function maskMoneyBR(v) {
   const d = onlyDigits(v)
   if (!d) return ''
@@ -239,13 +237,22 @@ async function gerarPdf() {
   error.value = ''
 
   try {
+    // IMPORTANTE:
+    // coloque o PDF em: public/modelos/ARLETE_-_ALUGUEL.pdf
+    // e use BASE_URL para funcionar no Amplify (subpasta, etc.)
     const url = `${import.meta.env.BASE_URL}modelos/ARLETE_-_ALUGUEL.pdf`
-    const bytes = await fetch(url).then(async (r) => {
-      if (!r.ok) throw new Error(`Falha ao carregar o PDF modelo. HTTP ${r.status}`)
+
+    const bytes = await fetch(url, { cache: 'no-store' }).then(async (r) => {
+      if (!r.ok) throw new Error(`Falha ao carregar o PDF modelo.\nURL: ${url}\nHTTP ${r.status}`)
       const ct = r.headers.get('content-type') || ''
-      if (!ct.includes('pdf')) {
+      if (!ct.toLowerCase().includes('pdf')) {
         const txt = await r.text()
-        throw new Error(`Modelo não é PDF (content-type: ${ct}). Início: ${txt.slice(0, 120)}`)
+        throw new Error(
+          `Modelo retornou algo que NÃO é PDF.\nURL: ${url}\ncontent-type: ${ct}\nInício da resposta: ${txt.slice(
+            0,
+            160,
+          )}`,
+        )
       }
       return r.arrayBuffer()
     })
@@ -377,7 +384,7 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
-    // 4.5 Lucros e dividendos (isentos)  [mantido]
+    // 4.5 Lucros e dividendos (isentos)
     writeTextRight(page, {
       xRight: xRightValores,
       y: 448 - 13,
@@ -390,10 +397,10 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
-    // 4.6 Valores pagos ao titular/sócio de ME/EPP... [novo]
+    // 4.6 Valores pagos ao titular/sócio de ME/EPP...
     writeTextRight(page, {
       xRight: xRightValores,
-      y: 448 - 27, // ajuste fino aqui se precisar
+      y: 448 - 31, // ajuste fino aqui se precisar
       w: wValor,
       h: hValor,
       text: form.isentoValoresPagosME,
