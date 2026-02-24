@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
     "pinia": "^3.0.4",
     "unorm": "^1.6.0",
     "vue": "beta",

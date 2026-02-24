@@ -13,13 +13,19 @@ const router = createRouter({
     {
       path: '/curriculos',
       name: 'curriculos',
-      component: () => import('../views/Curriculos.vue'), // ajuste o nome do arquivo se estiver diferente
+      component: () => import('../views/Curriculos.vue'),
     },
 
     {
       path: '/migrador-notas',
       name: 'migrador-notas',
       component: () => import('../views/MigradorNotas.vue'),
+    },
+
+    {
+      path: '/imposto-renda',
+      name: 'imposto-renda',
+      component: () => import('../views/ImpostoRenda.vue'),
     },
 
     {
