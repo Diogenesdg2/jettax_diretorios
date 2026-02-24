@@ -430,7 +430,7 @@ async function gerarPdf() {
 
     const a = document.createElement('a')
     a.href = blobUrl
-    a.download = `ARLETE_ALUGUEL_${(form.nomeCompleto || 'preenchido').replaceAll(' ', '_')}.pdf`
+    a.download = `ALUGUEL_${(form.nomeCompleto || 'preenchido').replaceAll(' ', '_')}.pdf`
     document.body.appendChild(a)
     a.click()
     a.remove()
