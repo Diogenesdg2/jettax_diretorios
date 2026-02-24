@@ -5,46 +5,99 @@
     <form @submit.prevent="gerarPdf" style="display: grid; gap: 12px; margin-top: 16px">
       <label>
         CNPJ
-        <input v-model.trim="form.cnpj" type="text" placeholder="00.000.000/0000-00" />
+        <input
+          :value="form.cnpj"
+          @input="form.cnpj = maskCnpj($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="00.000.000/0000-00"
+        />
       </label>
 
       <label>
         Nome empresarial
-        <input v-model.trim="form.nomeEmpresarial" type="text" placeholder="Razão Social" />
+        <input
+          :value="form.nomeEmpresarial"
+          @input="form.nomeEmpresarial = toUpper($event.target.value)"
+          placeholder="Razão Social"
+        />
       </label>
 
       <label>
         CPF
-        <input v-model.trim="form.cpf" type="text" placeholder="000.000.000-00" />
+        <input
+          :value="form.cpf"
+          @input="form.cpf = maskCpf($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="000.000.000-00"
+        />
       </label>
 
       <label>
         Nome completo
-        <input v-model.trim="form.nomeCompleto" type="text" placeholder="Nome do declarante" />
+        <input
+          :value="form.nomeCompleto"
+          @input="form.nomeCompleto = toUpper($event.target.value)"
+          placeholder="Nome do declarante"
+        />
       </label>
 
       <label>
         Total dos rendimentos (inclusive férias)
-        <input v-model.trim="form.totalRendimentos" type="text" placeholder="24.000,00" />
-      </label>
-      <label>
-        5. Imposto sobre a renda retido na fonte (IRRF)
-        <input v-model.trim="form.irrf" type="text" placeholder="0,00" />
+        <input
+          :value="form.totalRendimentos"
+          @input="form.totalRendimentos = maskMoneyBR($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="24.000,00"
+        />
       </label>
 
       <label>
-        4.4 Pensão/proventos por moléstia grave (isentos)
-        <input v-model.trim="form.isentoMolestiaGrave" type="text" placeholder="0,00" />
+        5. Imposto sobre a renda retido na fonte (IRRF)
+        <input
+          :value="form.irrf"
+          @input="form.irrf = maskMoneyBR($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="0,00"
+        />
       </label>
+
+      <!-- REMOVIDO: 4.4 Moléstia grave -->
 
       <label>
         4.5 Lucros e dividendos (isentos)
-        <input v-model.trim="form.isentoLucrosDividendos" type="text" placeholder="0,00" />
+        <input
+          :value="form.isentoLucrosDividendos"
+          @input="form.isentoLucrosDividendos = maskMoneyBR($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="0,00"
+        />
+      </label>
+
+      <label>
+        4.6 Valores pagos ao titular/sócio de ME/EPP (exceto pro labore, aluguéis ou serviços)
+        <input
+          :value="form.isentoValoresPagosME"
+          @input="form.isentoValoresPagosME = maskMoneyBR($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="0,00"
+        />
       </label>
 
       <label>
         5.3 Outros (tributação exclusiva)
-        <input v-model.trim="form.exclusivaOutros" type="text" placeholder="0,00" />
+        <input
+          :value="form.exclusivaOutros"
+          @input="form.exclusivaOutros = maskMoneyBR($event.target.value)"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="0,00"
+        />
       </label>
 
       <button type="submit" :disabled="loading">
@@ -72,27 +125,60 @@ const form = reactive({
   irrf: '',
 
   // 4. Rendimentos Isentos e Não Tributáveis
-  isentoMolestiaGrave: '', // item 4
   isentoLucrosDividendos: '', // item 5
+  isentoValoresPagosME: '', // item 6
 
   // 5. Rendimentos Sujeitos à Tributação Exclusiva
   exclusivaOutros: '', // item 3
 })
 
+// ====== Máscaras / normalizações ======
+function onlyDigits(v) {
+  return String(v ?? '').replace(/\D/g, '')
+}
+
+function maskCnpj(v) {
+  const d = onlyDigits(v).slice(0, 14)
+  return d
+    .replace(/^(\d{2})(\d)/, '$1.$2')
+    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3/$4')
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, '$1.$2.$3/$4-$5')
+}
+
+function maskCpf(v) {
+  const d = onlyDigits(v).slice(0, 11)
+  return d
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4')
+}
+
+function toUpper(v) {
+  return String(v ?? '').toUpperCase()
+}
+
+// sempre 2 casas decimais (pt-BR): 2400000 -> 24.000,00
+function maskMoneyBR(v) {
+  const d = onlyDigits(v)
+  if (!d) return ''
+
+  const cents = d.padStart(3, '0')
+  const intPart = cents.slice(0, -2).replace(/^0+(?=\d)/, '') || '0'
+  const decPart = cents.slice(-2)
+
+  const intFormatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return `${intFormatted},${decPart}`
+}
+
+// ====== PDF helpers ======
 function clearInside(page, { x, y, w, h, insetL = 4, insetR = 4, insetT = 2.4, insetB = 2.4 }) {
   const rx = x + insetL
   const ry = y + insetB
   const rw = Math.max(0, w - insetL - insetR)
   const rh = Math.max(0, h - insetT - insetB)
 
-  page.drawRectangle({
-    x: rx,
-    y: ry,
-    width: rw,
-    height: rh,
-    color: rgb(1, 1, 1),
-  })
-
+  page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, color: rgb(1, 1, 1) })
   return { rx, ry, rw, rh }
 }
 
@@ -105,9 +191,8 @@ function fitTextToWidth(font, text, size, maxWidth, minSize = 7) {
 
   const ell = '…'
   let cut = t
-  while (cut.length > 0 && font.widthOfTextAtSize(cut + ell, minSize) > maxWidth) {
+  while (cut.length > 0 && font.widthOfTextAtSize(cut + ell, minSize) > maxWidth)
     cut = cut.slice(0, -1)
-  }
   return { text: cut.length ? cut + ell : '', size: minSize }
 }
 
@@ -117,7 +202,6 @@ function writeTextLeft(
 ) {
   const inner = clearInside(page, { x, y, w, h, ...clear })
   const maxWidth = Math.max(0, inner.rw - padX * 2)
-
   const fitted = fitTextToWidth(font, text, size, maxWidth, minSize)
 
   page.drawText(fitted.text, {
@@ -149,14 +233,20 @@ function writeTextRight(
   })
 }
 
+// ====== Gerar PDF ======
 async function gerarPdf() {
   loading.value = true
   error.value = ''
 
   try {
-    const url = '/modelos/ARLETE_-_ALUGUEL.pdf'
-    const bytes = await fetch(url).then((r) => {
-      if (!r.ok) throw new Error('Não foi possível carregar o PDF modelo.')
+    const url = `${import.meta.env.BASE_URL}modelos/ARLETE_-_ALUGUEL.pdf`
+    const bytes = await fetch(url).then(async (r) => {
+      if (!r.ok) throw new Error(`Falha ao carregar o PDF modelo. HTTP ${r.status}`)
+      const ct = r.headers.get('content-type') || ''
+      if (!ct.includes('pdf')) {
+        const txt = await r.text()
+        throw new Error(`Modelo não é PDF (content-type: ${ct}). Início: ${txt.slice(0, 120)}`)
+      }
       return r.arrayBuffer()
     })
 
@@ -227,7 +317,7 @@ async function gerarPdf() {
       clear: { insetL: 4, insetR: 6, insetT: 3, insetB: 2.2 },
     })
 
-    // Nome completo  (corrigido w p/ bater com x)
+    // Nome completo
     writeTextLeft(page, {
       x: 145,
       y: yCpf - 1.2,
@@ -274,7 +364,7 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
-    // 5. IRRF (ajustado por você)
+    // 5. IRRF
     writeTextRight(page, {
       xRight: xRightValores,
       y: 595.23 - 65,
@@ -287,26 +377,10 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
-    // ===== NOVOS 3 CAMPOS (ajuste fino no Y) =====
-    // Se precisar SUBIR, AUMENTE o y. Se precisar DESCER, DIMINUA o y.
-
-    // 4.4 Moléstia grave (isentos)  [AJUSTE y]
+    // 4.5 Lucros e dividendos (isentos)  [mantido]
     writeTextRight(page, {
       xRight: xRightValores,
-      y: 430, // <- ajuste
-      w: wValor,
-      h: hValor,
-      text: form.isentoMolestiaGrave,
-      font,
-      size: 7,
-      padRight: 6,
-      clear: clearValor,
-    })
-
-    // 4.5 Lucros e dividendos (isentos) [AJUSTE y]
-    writeTextRight(page, {
-      xRight: xRightValores,
-      y: 412, // <- ajuste
+      y: 448 - 13,
       w: wValor,
       h: hValor,
       text: form.isentoLucrosDividendos,
@@ -316,10 +390,23 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
-    // 5.3 Outros (tributação exclusiva) [AJUSTE y]
+    // 4.6 Valores pagos ao titular/sócio de ME/EPP... [novo]
     writeTextRight(page, {
       xRight: xRightValores,
-      y: 315, // <- ajuste
+      y: 448 - 27, // ajuste fino aqui se precisar
+      w: wValor,
+      h: hValor,
+      text: form.isentoValoresPagosME,
+      font,
+      size: 7,
+      padRight: 6,
+      clear: clearValor,
+    })
+
+    // 5.3 Outros (tributação exclusiva)
+    writeTextRight(page, {
+      xRight: xRightValores,
+      y: 351 - 31,
       w: wValor,
       h: hValor,
       text: form.exclusivaOutros,
@@ -329,13 +416,26 @@ async function gerarPdf() {
       clear: clearValor,
     })
 
+    // 8. Responsável pelas Informações (Data fixa)
+    writeTextLeft(page, {
+      x: 248,
+      y: 103,
+      w: 100,
+      h: 12,
+      text: '27/02/2026',
+      font,
+      size: 7,
+      padX: 6,
+      clear: { insetL: 4, insetR: 4, insetT: 3, insetB: 2.2 },
+    })
+
     const pdfBytes = await pdfDoc.save()
     const blob = new Blob([pdfBytes], { type: 'application/pdf' })
     const blobUrl = URL.createObjectURL(blob)
 
     const a = document.createElement('a')
     a.href = blobUrl
-    a.download = `ARLETE_ALUGUEL_${(form.nomeCompleto || 'preenchido').replaceAll(' ', '_')}.pdf`
+    a.download = `ALUGUEL_${(form.nomeCompleto || 'preenchido').replaceAll(' ', '_')}.pdf`
     document.body.appendChild(a)
     a.click()
     a.remove()
